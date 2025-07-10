@@ -3,7 +3,7 @@ import axios from 'axios';
 import "./MovieList.css"
 import MovieDetail from './MovieDetail';
 
-const MovieList = ( {fetchUrl, results}) => {
+const MovieList = ( {fetchUrl, categoryName}) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,9 +22,9 @@ const MovieList = ( {fetchUrl, results}) => {
         setLoading(false);
       }
     };
-
     fetchMovies();
   }, [fetchUrl]);
+  
    // tìm phim, chỉ được gọi khi click tìm kiếm
   const handleSelectedClick = async (movieId) =>{
     try{
@@ -46,8 +46,8 @@ const MovieList = ( {fetchUrl, results}) => {
 
   return (
      <>
-    
-      <h1> HOT LIST </h1>
+    <div className="movie-list">
+      <h2 className="category-name">{categoryName}</h2>
         {loading ? (
           <p>Loading movies...</p>
         ) : movies.length === 0 ? (
@@ -81,6 +81,7 @@ const MovieList = ( {fetchUrl, results}) => {
           </div>
           </div>
         )}
+      </div>
     </>
     
   );
