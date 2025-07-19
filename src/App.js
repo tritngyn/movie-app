@@ -24,7 +24,7 @@ function App() {
   const [error, setError] = useState(null);
   const [favmovie, setFavmovies] = useState([]);
   const [categoryName, setCategoryName] = useState('Popular');
-  const [selectedGenre, setSelectedGenre] = useState('28');
+  const [selectedGenre, setSelectedGenre] = useState('');
 
   useEffect(() => {
       const savedFavHistory = localStorage.getItem('searchFavHistory');
@@ -64,7 +64,7 @@ function App() {
         }
   }; 
 
-  const constructFetchUrl = ({genreID}) => {
+  const constructFetchUrl = (genreID) => {
     if (genreID) {
       return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${genreID}&api_key=${process.env.REACT_APP_API_KEY}`;
     }

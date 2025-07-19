@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from "react";
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import './NAV.css'
      library.add(faBars);
 
 const NAV = ({onSelectGenre}) => {
@@ -19,8 +20,8 @@ const NAV = ({onSelectGenre}) => {
     const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-    const handleGenreClick = (genreId, genreName) => {
-    onSelectGenre(genreId, genreName);  
+    const handleGenreClick = (genreID, genreName) => {
+    onSelectGenre(genreID, genreName);  
     setIsMenuOpen(false);
     const movieListElement = document.querySelector('.movie-list');
     movieListElement.scrollIntoView({ behavior: 'smooth' });
@@ -29,7 +30,15 @@ const NAV = ({onSelectGenre}) => {
 
     return (
         <div className="nav">
-            <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""} end> HOME</NavLink>
+            <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""} 
+            end 
+            onClick={(e) => {
+              e.preventDefault(); // Ngăn NavLink xử lý mặc định
+    window.location.href = "/"; // Chuyển về trang chủ và refresh
+            }
+              
+             } 
+            > HOME</NavLink>
             <NavLink to="/user" className={({ isActive }) => isActive ? "active" : ""}> USER</NavLink>
             <div className="navbarlinks">
                 <button className="hamburger" onClick={toggleMenu}>
