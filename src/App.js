@@ -52,7 +52,6 @@ function App() {
             `${process.env.REACT_APP_BASE_URL}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${term}`
         );
         setSearchResults(response.data.results || []);
-
         const moviesGrid = document.querySelector('.movies-grid');
         if (moviesGrid) {
             moviesGrid.scrollIntoView({ behavior: 'smooth' });
@@ -76,9 +75,10 @@ function App() {
 
   //hàm cập nhập Favorite Movie
    const handleAddFav = (movie) => {
-      const updatedFavHistory = [movie, ...favmovie.filter(item => item !== movie)].slice(0, 10);
+      const updatedFavHistory = [movie, ...favmovie.filter(item => item.id !== movie.id)].slice(0, 10);
       setFavmovies(updatedFavHistory);
       localStorage.setItem('searchFavHistory', JSON.stringify(updatedFavHistory));
+      console.log('add movie:', movie.title || movie.name)
     };
     const DeleteFav = (movie) => {
       const newFav = favmovie.filter(item => item !== movie) ;
@@ -97,13 +97,13 @@ function App() {
           <Route path='/' element={
           <>
               <SearchBar OnSearch = {handleClickSearch} />
-              <SearchResults results = {searchresults} searchTerm= {searchterm}/>
+              <SearchResults results = {searchresults} searchTerm= {searchterm} handleAddFav ={handleAddFav}/>
               <MovieList  fetchUrl = {fetchUrl} categoryName={categoryName} handleAddFav ={handleAddFav}/>
           </>
             }/>
            <Route path="/user" element={
             <>
-            <Favorite results = {searchresults} favmovie = {favmovie} />
+            <Favorite results = {searchresults}  favmovie = {favmovie.filter(movie => movie && movie.poster_path)}  />
             </>} />
         </Routes>
       </BrowserRouter>

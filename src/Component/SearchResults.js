@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import MovieDetail from "./MovieDetail";
-import './MovieDetail.css';
 import './SearchResults.css';
+
 const SearchResults = ({searchTerm,results}) =>{
     const [movies, setSearchmovies] = useState([]);
     const [loading ,setLoading] = useState(false);
@@ -11,6 +11,7 @@ const SearchResults = ({searchTerm,results}) =>{
     
    const handleSelectedClick = async (movieId) =>{
     try{
+      if (!movieId) return;
         const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar,external_ids`
       );
@@ -47,8 +48,9 @@ const SearchResults = ({searchTerm,results}) =>{
                     alt={movie.title} 
                     className="movie-poster"
                   />
-                  
+                   {/* <button className="movie-badges" onClick={(e) => {e.stopPropagation(); handleSelectedClick(movie) }}>+</button> */}
                 </div>
+               
               ))}
             </div>
           </div>

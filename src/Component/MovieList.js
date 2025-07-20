@@ -37,7 +37,7 @@ const MovieList = ( {fetchUrl, categoryName, handleAddFav}) => {
       console.error("Error fetching movie details:", error);
     } 
 
-  }  ;
+  } ;
     const handleCloseModal = () =>{
       setSelectedMovie(null);
         document.body.style.overflow = 'unset';
@@ -66,7 +66,11 @@ const MovieList = ( {fetchUrl, categoryName, handleAddFav}) => {
                   className="movie-poster"
                 />
                 <h4 className="movie-title">{movie.title || movie.name}</h4>
+                <button className='movie-badges' onClick={(e)=>  {
+                                e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
+                                handleAddFav(movie)}} > + </button>
               </div>
+             
             ))}
           </div>
         )}
