@@ -52,7 +52,7 @@ function App() {
             `${process.env.REACT_APP_BASE_URL}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${term}`
         );
         setSearchResults(response.data.results || []);
-        setCategoryName(`Search Results: ${searchterm}`);
+
         const moviesGrid = document.querySelector('.movies-grid');
         if (moviesGrid) {
             moviesGrid.scrollIntoView({ behavior: 'smooth' });
@@ -85,7 +85,7 @@ function App() {
       setFavmovies(newFav);
       localStorage.setItem(`searchFavHistory`, JSON.stringify(newFav));
     };
-    const handleSelectGenre = (genreID, genreName ) => {
+  const handleSelectGenre = (genreID, genreName ) => {
       setSelectedGenre(genreID);
       setCategoryName(genreName);
     };
@@ -98,7 +98,7 @@ function App() {
           <>
               <SearchBar OnSearch = {handleClickSearch} />
               <SearchResults results = {searchresults} searchTerm= {searchterm}/>
-              <MovieList  fetchUrl = {fetchUrl} categoryName={categoryName} />
+              <MovieList  fetchUrl = {fetchUrl} categoryName={categoryName} handleAddFav ={handleAddFav}/>
           </>
             }/>
            <Route path="/user" element={

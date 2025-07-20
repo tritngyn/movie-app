@@ -3,7 +3,7 @@ import axios from 'axios';
 import "./MovieList.css"
 import MovieDetail from './MovieDetail';
 
-const MovieList = ( {fetchUrl, categoryName}) => {
+const MovieList = ( {fetchUrl, categoryName, handleAddFav}) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

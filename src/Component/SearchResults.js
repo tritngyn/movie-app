@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import MovieDetail from "./MovieDetail";
 import './MovieDetail.css';
-
+import './SearchResults.css';
 const SearchResults = ({searchTerm,results}) =>{
     const [movies, setSearchmovies] = useState([]);
     const [loading ,setLoading] = useState(false);
@@ -47,7 +47,7 @@ const SearchResults = ({searchTerm,results}) =>{
                     alt={movie.title} 
                     className="movie-poster"
                   />
-                  <h3 className="movie-title">{movie.title}</h3>
+                  
                 </div>
               ))}
             </div>

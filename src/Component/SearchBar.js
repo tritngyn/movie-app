@@ -25,7 +25,7 @@ function SearchBar({OnSearch}){
                 onChange={handleInputChange}
                 className="search-input" 
                 />
-            <button type="submit" className="submit_button" >Tìm</button>
+            <button type="submit" className="search-button" >Tìm</button>
         </form>
         
         </>

@@ -1,117 +1,111 @@
-/* Navbar Styling */
+/* === Reset === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Navbar Container === */
 .nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1c1c1c; /* Đậm hơn để nổi bật */
-  padding: 10px 30px;
+  background-color: #1c1c1c;
+  color: white;
+  padding: 12px 24px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
+  font-family: 'Poppins', sans-serif;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Logo */
-.logo img {
-  height: 50px;
-  width: 50px;
-  border-radius: 10px;
-}
-
-/* Title */
-.title {
-  color: #ffffff;
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin: 0 20px;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Navigation Links */
-.nav-links {
-  display: flex;
-  list-style: none;
-  gap: 20px;
-}
-
-.nav-links li a {
+/* === Navigation Links (HOME / USER) === */
+.nav a {
+  color: #f0f0f0;
   text-decoration: none;
-  color: #f4f4f4;
+  margin: 0 10px;
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 8px;
-  transition: background 0.3s ease;
+  transition: background-color 0.3s;
 }
 
-.nav-links li a:hover {
+.nav a:hover,
+.nav a.active {
   background-color: #ff5722;
   color: white;
 }
 
-/* Hamburger Menu */
-.hamburger-menu {
-    display: flex;
-    background-color: #ff5e00;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 50px;
-    height: 20px;
-    cursor: pointer;
-    z-index: 1001;
-    left: 20px;
-}
-.hamburger{
-    background-color: #ff5e00;
-    width: 40px;
-    height: 40px;
-    border: #f0f0f0;
-    border-radius: 10px;
+/* === Hamburger Icon === */
+.hamburger {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
 .hamburger:hover {
-    color: #fff;
-    background-color: #e95601;
+  transform: scale(1.1);
 }
 
-.hamburger-line {
-    height: 4px;
-    background-color: #fff;
-    border-radius: 2px;
-}
-
-/* Dropdown Menu */
+/* === Dropdown Menu === */
 .dropdown-menu {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    background-color: #ff5e00;
-    color: #000000;
-    border: none;
-    padding: 15px 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    display: block; /* Hide the menu by default */
-    width: 150px;
+  position: absolute;
+  top: 60px;
+  right: 24px;
+  background-color: #2c2c2c;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  padding: 12px 0;
+  list-style: none;
+  min-width: 160px;
+  animation: dropdownFade 0.3s ease;
+  z-index: 999;
 }
 
-.dropdown-menu.active {
-    display: block;
+.dropdown-menu li {
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.dropdown-menu ul {
-    list-style-type: none; /* Remove bullet points */
-    padding: 0;
-    margin: 0;
+.dropdown-menu li:hover {
+  background-color: #ff5722;
 }
 
-.dropdown-menu ul li {
-    padding: 12px 8px; /* Add space between the text */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+/* === Animation === */
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.dropdown-menu ul li:hover {
-    background-color: #f0f0f0;
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+  .nav {
+    flex-direction: row;
+  }
+
+  .nav a {
+    font-size: 0.9rem;
+    margin: 0 6px;
+  }
+
+  .dropdown-menu {
+    right: 10px;
+    top: 56px;
+    width: 100%;
+    max-width: 220px;
+  }
 }
