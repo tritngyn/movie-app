@@ -1,95 +1,94 @@
 /* Body and General Styling */
 body {
-    background-color: #080808;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 0;
+  background-color: #080808;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
 }
- h2{
-color: #ff5e00;
-font-size: 20px;
-
- }
+h2 {
+  color: #ff5e00;
+  font-size: 20px;
+}
 /* Container Styling */
 .container {
-    position: relative;
-    padding-top: 80px;  /* Add padding to prevent overlap with fixed navbar */
+  position: relative;
+  padding-top: 80px; /* Add padding to prevent overlap with fixed navbar */
 }
- /* Movie Grid */
-    .movies-list {
-      margin-top: 5%;
-      padding: 20px;
-    }
+/* Movie Grid */
+.movies-list {
+  margin-top: 5%;
+  padding: 20px;
+}
 
-    .category-title {
-      color: #fff;
-      font-size: 24px;
-      margin-bottom: 20px;
-      padding-left: 20px;
-    }
+.category-title {
+  color: #fff;
+  font-size: 24px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
 
-    /* Update movies grid styles */
-    .movies-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 30px;
-        padding: 20px;
-        margin-top: 20px;
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+/* Update movies grid styles */
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 30px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-    /* Update movie card styles */
-    .movie-card {
-        width: 200px;
-        height: auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin: 0 auto;
-    }
+/* Update movie card styles */
+.movie-card {
+  width: 200px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
 
-    .movie-poster {
-        width: 100%;
-        height: 300px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
+.movie-poster {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+}
 
-    .movie-title {
-        color: #ff5e00;
-        margin-top: 8px;
-        font-size: 14px;
-        text-align: center;
-        width: 100%;
-        height: 40px; /* giới hạn chiều cao */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+.movie-title {
+  color: #ff5e00;
+  margin-top: 8px;
+  font-size: 14px;
+  text-align: center;
+  width: 100%;
+  height: 40px; /* giới hạn chiều cao */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-    /* Add clear separation between sections */
-    .movies-list {
-        margin-top: 50px;
-        width: 100%;
-    }
+/* Add clear separation between sections */
+.movies-list {
+  margin-top: 50px;
+  width: 100%;
+}
 
-    .search-results-header {
-        color: #fff;
-        margin: 20px;
-        font-size: 24px;
-    }
+.search-results-header {
+  color: #fff;
+  margin: 20px;
+  font-size: 24px;
+}
 
 /* Add this new style */
 .search-results-grid .movie-card .movie-title {
-    margin-top: 10px;
-    color: #ff5e00;
-    font-size: 14px;
-    text-align: center;
-    height: 38px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; /* hoặc dùng -webkit-line-clamp nếu muốn 2 dòng */
+  margin-top: 10px;
+  color: #ff5e00;
+  font-size: 14px;
+  text-align: center;
+  height: 38px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* hoặc dùng -webkit-line-clamp nếu muốn 2 dòng */
 }
