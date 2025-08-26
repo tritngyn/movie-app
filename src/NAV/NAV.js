@@ -1,15 +1,18 @@
-import React from "react";
 import { NavLink, useSearchParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
+import SearchBar from "../Component/SearchBar";
 import "./NAV.css";
 library.add(faBars);
 
-const NAV = ({ onSelectGenre }) => {
+const NAV = ({ onSelectGenre, handleClickSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const [isSearchBarOpen, setIsSBOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const genres = [
     { id: 28, name: "Action" },
     { id: 35, name: "Comedy" },
@@ -17,6 +20,9 @@ const NAV = ({ onSelectGenre }) => {
     { id: 27, name: "Horror" },
     { id: 10749, name: "Romance" },
   ];
+  const toggleSearchBar = () => {
+    setIsSBOpen(!isSearchBarOpen);
+  };
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -26,51 +32,77 @@ const NAV = ({ onSelectGenre }) => {
     const movieListElement = document.querySelector(".movie-list");
     movieListElement.scrollIntoView({ behavior: "smooth" });
   };
+  // fade-in
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className="nav">
-      <NavLink
-        to="/"
-        className={({ isActive }) => (isActive ? "active" : "")}
-        end
-        onClick={(e) => {
-          e.preventDefault(); // Ngăn NavLink xử lý mặc định
-          window.location.href = "/"; // Chuyển về trang chủ và refresh
-        }}
-      >
-        {" "}
-        HOME
-      </NavLink>
-      <NavLink
-        to="/user"
-        className={({ isActive }) => (isActive ? "active" : "")}
-      >
-        {" "}
-        USER
-      </NavLink>
-      <div className="navbarlinks">
-        <button className="hamburger" onClick={toggleMenu}>
-          <FontAwesomeIcon icon="fa-solid fa-bars" />
-        </button>
-        {isMenuOpen && (
-          <ul className="dropdown-menu">
-            <li
-              onClick={() => {
-                onSelectGenre("", "Popular");
-                setIsMenuOpen(false);
+    <div className={`nav ${scrolled ? "scrolled" : ""}`}>
+      {!isSearchBarOpen && (
+        <>
+          <div className="nav-left">
+            <div className="navbarlinks">
+              <button className="hamburger" onClick={toggleMenu}>
+                <FontAwesomeIcon icon="fa-solid fa-bars" />
+              </button>
+              {isMenuOpen && (
+                <ul className="dropdown-menu">
+                  <li
+                    onClick={() => {
+                      onSelectGenre("", "Popular");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    Popular
+                  </li>
+                  {genres.map((genre) => (
+                    <li
+                      key={genre.id}
+                      onClick={() => handleGenreClick(genre.id, genre.name)}
+                    >
+                      {genre.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <NavLink
+              to="/"
+              className={({ isActive }) => (isActive ? "active" : "")}
+              end
+              onClick={(e) => {
+                e.preventDefault(); // Ngăn NavLink xử lý mặc định
+                window.location.href = "/"; // Chuyển về trang chủ và refresh
               }}
             >
-              Popular
-            </li>
-            {genres.map((genre) => (
-              <li
-                key={genre.id}
-                onClick={() => handleGenreClick(genre.id, genre.name)}
-              >
-                {genre.name}
-              </li>
-            ))}
-          </ul>
+              {" "}
+              HOME
+            </NavLink>
+            <NavLink
+              to="/user"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              {" "}
+              USER
+            </NavLink>
+          </div>
+        </>
+      )}
+
+      <div className="nav-right">
+        <button>
+          <SearchIcon className="searchicon" onClick={toggleSearchBar} />
+        </button>
+        {isSearchBarOpen && (
+          <>
+            <SearchBar OnSearch={handleClickSearch} />
+            <ClearIcon onClick={() => setIsSBOpen(!isSearchBarOpen)} />
+          </>
         )}
       </div>
     </div>

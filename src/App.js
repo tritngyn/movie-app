@@ -92,13 +92,15 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <NAV onSelectGenre={handleSelectGenre} />
+        <NAV
+          onSelectGenre={handleSelectGenre}
+          handleClickSearch={handleClickSearch}
+        />
         <Routes>
           <Route
             path="/"
             element={
               <>
-                <SearchBar OnSearch={handleClickSearch} />
                 <HeroSection />
                 <SearchResults
                   results={searchresults}

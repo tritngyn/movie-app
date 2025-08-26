@@ -2,11 +2,10 @@
 .hero {
   position: relative;
   height: 200vh;
-  /* background: url("netflix-bg.jpg") no-repeat center center/cover; */
-  display: flex;
+  display: absolute;
   justify-content: center;
-  align-items: center;
-  text-align: center;
+  align-items: left;
+  text-align: left;
   color: #fff;
   padding: 0 20px;
 }
@@ -26,7 +25,15 @@
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 700px;
+  max-width: 600px;
+  color: #fff;
+  padding: 0 20px;
+  margin-left: 50px; /* Căn trái như RoPhim */
+  margin-bottom: 50px; /* Đẩy content lên phía trên một chút */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
 }
 
 .hero-title {
@@ -43,11 +50,13 @@
 
 /* Nút CTA */
 .btn-primary {
-  display: inline-block;
+  width: 12px;
+  display: inline;
+  position: relative;
   background: #e50914;
   color: #fff;
-  padding: 14px 32px;
-  border-radius: 4px;
+  padding: 14px 42px;
+  border-radius: 10px;
   font-size: 1.2rem;
   font-weight: bold;
   text-decoration: none;

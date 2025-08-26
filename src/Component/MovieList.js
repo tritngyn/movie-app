@@ -7,7 +7,6 @@ const MovieList = ({ fetchUrl, categoryName, handleAddFav }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [Smovies, setSMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
