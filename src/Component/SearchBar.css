@@ -7,9 +7,9 @@
   padding: 8px 12px;
   border-radius: 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 450px;
-  margin: 20px auto; /* canh giữa nếu cần */
+  width: 100vh;
+  max-width: 900px;
+  margin: 0;
 }
 
 /* === Search Input === */
@@ -33,7 +33,7 @@
 .search-button {
   padding: 10px 16px;
   background-color: #ff5e00;
-  color: white;
+  color: black;
   font-weight: 500;
   border: none;
   border-radius: 10px;
@@ -43,5 +43,5 @@
 
 .search-button:hover {
   background-color: #ff6600;
-  transform: scale(1.05);
+  transform: scale(1.5);
 }

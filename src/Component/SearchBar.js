@@ -19,7 +19,7 @@ function SearchBar({ OnSearch }) {
         <input
           type="text"
           value={searchTerm}
-          placeholder="Nhap ten phim"
+          placeholder="Tìm kiếm phim, diễn viên"
           onChange={handleInputChange}
           className="search-input"
         />
