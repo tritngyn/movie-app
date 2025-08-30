@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import SearchBar from "./Component/SearchBar";
 import "./App.css";
 import MovieList from "./Component/MovieList";
 import SearchResults from "./Component/SearchResults";
 import Favorite from "./Component/Favortite";
 import axios from "axios";
 import NAV from "./NAV/NAV";
+import { ToastContainer, toast } from "react-toastify";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import HeroSection from "./Component/HeroSection";
 import "./Component/HeroSection.css";
-
+import { Swiper, SwiperSlide } from "swiper/react";
 //import './NAV/NAV.css'
 
 function App() {
@@ -72,6 +72,7 @@ function App() {
 
   //hàm cập nhập Favorite Movie
   const handleAddFav = (movie) => {
+    toast("Add success!", movie.title);
     const updatedFavHistory = [
       movie,
       ...favmovie.filter((item) => item.id !== movie.id),
@@ -102,17 +103,23 @@ function App() {
             element={
               <>
                 <HeroSection />
-                <SearchResults
-                  results={searchresults}
-                  searchTerm={searchterm}
-                  handleAddFav={handleAddFav}
-                />
+                <Swiper />
                 <MovieList
                   fetchUrl={fetchUrl}
                   categoryName={categoryName}
                   handleAddFav={handleAddFav}
                 />
               </>
+            }
+          />
+          <Route
+            path="/searchresult"
+            element={
+              <SearchResults
+                results={searchresults}
+                searchTerm={searchterm}
+                handleAddFav={handleAddFav}
+              />
             }
           />
           <Route
@@ -131,6 +138,18 @@ function App() {
           />
         </Routes>
       </BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }
