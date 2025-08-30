@@ -23,18 +23,6 @@ const Favorite = ({ results, favmovie, fetchUrl, DeleteFav }) => {
     };
     fetchMovies();
   }, [fetchUrl]);
-  useEffect(() => {
-    if (selectedMovie) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    return () => {
-      document.body.style.overflow = "unset"; // Cleanup khi unmount
-    };
-  }, [selectedMovie]);
-
   // tìm phim, chỉ được gọi khi click tìm kiếm
   const handleSelectedClick = async (movieId) => {
     try {

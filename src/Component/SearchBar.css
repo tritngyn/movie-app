@@ -7,8 +7,8 @@
   padding: 8px 12px;
   border-radius: 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100vh;
-  max-width: 900px;
+  width: 100%;
+  max-width: 600px;
   margin: 0;
 }
 
@@ -23,7 +23,21 @@
   background-color: #f7f7f7;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
+/* Mobile: dưới 768px */
+@media (max-width: 768px) {
+  .search-bar {
+    width: 90%; /* Nhỏ hơn một chút để có padding hai bên */
+    font-size: 14px; /* Giảm size chữ cho gọn */
+  }
+}
 
+/* Rất nhỏ: dưới 480px */
+@media (max-width: 480px) {
+  .search-bar {
+    width: 95%; /* Gần full */
+    font-size: 12px; /* Giảm thêm */
+  }
+}
 .search-input:focus {
   background-color: #fff;
   box-shadow: 0 0 0 2px #ff5e00;

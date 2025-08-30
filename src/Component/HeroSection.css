@@ -29,7 +29,7 @@
   color: #fff;
   padding: 0 20px;
   margin-left: 50px; /* Căn trái như RoPhim */
-  margin-bottom: 50px; /* Đẩy content lên phía trên một chút */
+  margin-bottom: 100px; /* Đẩy content lên phía trên một chút */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -50,17 +50,20 @@
 
 /* Nút CTA */
 .btn-primary {
-  width: 12px;
-  display: inline;
-  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   background: #e50914;
   color: #fff;
-  padding: 14px 42px;
-  border-radius: 10px;
-  font-size: 1.2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 9999px;
+  font-size: 1.4rem;
   font-weight: bold;
   text-decoration: none;
   transition: background 0.3s ease;
+  border: none;
+  padding: 0;
 }
 
 .btn-primary:hover {

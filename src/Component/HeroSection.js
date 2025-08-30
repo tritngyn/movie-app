@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import MovieDetail from "./MovieDetail";
 import axios from "axios";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ClearIcon from "@mui/icons-material/Clear";
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState("");
@@ -96,8 +96,8 @@ const Hero = () => {
                     </span>
                   ))}
                 </div>
+                <div>{movie.overview}</div>
               </div>
-              <div>{movie.overview}</div>
             </>
           )}
           <a
@@ -107,7 +107,7 @@ const Hero = () => {
               console.log("pop up:", movie.title);
             }}
           >
-            <PlayCircleIcon />
+            <PlayArrowIcon />
           </a>
         </div>
       </section>
