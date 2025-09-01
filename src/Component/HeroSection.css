@@ -1,15 +1,4 @@
 /* Hero Section */
-.hero {
-  position: relative;
-  height: 200vh;
-  display: absolute;
-  justify-content: center;
-  align-items: left;
-  text-align: left;
-  color: #fff;
-  padding: 0 20px;
-}
-
 /* Overlay (để chữ nổi bật hơn) */
 .hero-overlay {
   position: absolute;
@@ -17,35 +6,44 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.4),
+    transparent
+  );
 }
 
 /* Nội dung Hero */
 .hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 600px;
-  color: #fff;
-  padding: 0 20px;
-  margin-left: 50px; /* Căn trái như RoPhim */
-  margin-bottom: 100px; /* Đẩy content lên phía trên một chút */
-  display: flex;
+  align-items: flex-start;
   flex-direction: column;
-  justify-content: flex-end;
-  height: 100%;
+  position: absolute;
+  width: 70%;
+  max-width: none;
+  display: flex;
+  color: #fff;
+  bottom: 10%;
+  left: 5%;
+  justify-content: space-between;
+  gap: 20px;
 }
-
+.hero-overview {
+  align-items: flex-start;
+  flex-direction: column;
+}
 .hero-title {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 20px;
 }
-
-.hero-subtitle {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-  color: #ccc;
+.rating {
+  border-radius: 10px;
+  border-style: solid;
+}
+.release-year {
+  border-radius: 10px;
+  border-style: solid;
 }
 
 /* Nút CTA */

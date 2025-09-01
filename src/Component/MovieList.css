@@ -1,3 +1,7 @@
+.movie-list {
+  width: 100%;
+  padding: 20px;
+}
 .movie-card {
   position: relative;
   width: 250px;
@@ -5,10 +9,6 @@
   cursor: pointer;
   overflow: hidden;
   border-radius: 8px;
-}
-
-.movie-card :hover {
-  background-color: #ff5e00;
 }
 
 /* Poster image styling */
@@ -87,8 +87,17 @@
   align-items: center;
   position: relative;
   cursor: pointer;
+  text-align: center;
+  color: white;
 }
-
+.movie-item img {
+  width: 100%;
+  border-radius: 10px;
+  transition: transform 0.3s;
+}
+.movie-item img:hover {
+  transform: scale(1.05);
+}
 /* Movie title below the poster */
 .movie-item .movie-title {
   margin-top: 10px;
