@@ -5,35 +5,39 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
-
-import "./styles.css";
-
+import "Swiper.css"
 // import required modules
 import { Pagination } from "swiper/modules";
 
-export default function App() {
+const Swiper = () => {
+    const [movies, setMovies] = useState([]);
+
+useEffect(() => {
+  fetch("https://api.themoviedb.org/3/movie/popular?api_key=YOUR_API_KEY")
+    .then(res => res.json())
+    .then(data => setMovies(data.results));
+}, []);
+
   return (
-    <>
-      <Swiper
-        slidesPerView={3}
-        spaceBetween={30}
-        pagination={{
-          clickable: true,
-        }}
-        modules={[Pagination]}
-        className="mySwiper"
-      >
-        <h5>SWIPER</h5>
-        <SwiperSlide>Slide 1</SwiperSlide>
-        <SwiperSlide>Slide 2</SwiperSlide>
-        <SwiperSlide>Slide 3</SwiperSlide>
-        <SwiperSlide>Slide 4</SwiperSlide>
-        <SwiperSlide>Slide 5</SwiperSlide>
-        <SwiperSlide>Slide 6</SwiperSlide>
-        <SwiperSlide>Slide 7</SwiperSlide>
-        <SwiperSlide>Slide 8</SwiperSlide>
-        <SwiperSlide>Slide 9</SwiperSlide>
-      </Swiper>
-    </>
-  );
-}
+  <Swiper
+    modules={[Navigation, Pagination, Autoplay]}
+    navigation
+    pagination={{ clickable: true }}
+    autoplay={{ delay: 3000 }}
+    loop={true}
+    spaceBetween={20}
+    slidesPerView={1}
+  >
+    {movies.map(movie => (
+      <SwiperSlide key={movie.id}>
+        <img
+          src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+          alt={movie.title}
+        />
+      </SwiperSlide>
+    ))}
+  </Swiper>
+);
+export default Swiper();
+
+

@@ -3,6 +3,11 @@ import axios from "axios";
 import "./MovieList.css";
 import MovieDetail from "./MovieDetail";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation } from "swiper/modules";
+
 const MovieList = ({ fetchUrl, categoryName, handleAddFav }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -45,38 +50,53 @@ const MovieList = ({ fetchUrl, categoryName, handleAddFav }) => {
     <>
       <div className="movie-list">
         <h2 className="category-name">{categoryName}</h2>
-        {loading ? (
-          <p>Loading movies...</p>
-        ) : movies.length === 0 ? (
-          <p>No movies available</p>
-        ) : (
-          <div className="movies-grid">
-            {movies.map((movie) => (
-              <div
-                key={movie.id}
-                className="movie-item"
-                onClick={() => handleSelectedClick(movie.id)}
-              >
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title || movie.name}
-                  className="movie-poster"
-                />
-                <h4 className="movie-title">{movie.title || movie.name}</h4>
-                <button
-                  className="movie-badges"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
-                    handleAddFav(movie);
-                  }}
+        <Swiper
+          modules={[Navigation]}
+          spaceBetween={20}
+          slidesPerView="auto"
+          navigation
+          loop={true}
+          grabCursor={true}
+          breakpoints={{
+            320: { slidesPerView: 2 },
+            768: { slidesPerView: 4 },
+            1024: { slidesPerView: 6 },
+          }}
+        >
+          {loading ? (
+            <p>Loading movies...</p>
+          ) : movies.length === 0 ? (
+            <p>No movies available</p>
+          ) : (
+            <div className="movies-grid">
+              {movies.map((movie) => (
+                <SwiperSlide
+                  key={movie.id}
+                  className="movie-item"
+                  onClick={() => handleSelectedClick(movie.id)}
+                  style={{ width: "200px" }} // hoặc chiều rộng bạn muốn
                 >
-                  {" "}
-                  +{" "}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    alt={movie.title || movie.name}
+                    className="movie-poster"
+                  />
+                  <h4 className="movie-title">{movie.title || movie.name}</h4>
+                  <button
+                    className="movie-badges"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
+                      handleAddFav(movie);
+                    }}
+                  >
+                    {" "}
+                    +{" "}
+                  </button>
+                </SwiperSlide>
+              ))}
+            </div>
+          )}
+        </Swiper>
         {selectedMovie && (
           <div className="movie-popup">
             <div className="movie-popup-overlay" onClick={handleCloseModal} />

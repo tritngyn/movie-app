@@ -4,6 +4,15 @@ import MovieDetail from "./MovieDetail";
 import axios from "axios";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ClearIcon from "@mui/icons-material/Clear";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState("");
   const [movies, setMovies] = useState([]);
@@ -24,36 +33,18 @@ const Hero = () => {
       .catch((err) => console.error(err));
   }, []);
 
-  // Auto slide
-  useEffect(() => {
-    if (movies.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
-      }, 5000); // đổi ảnh mỗi 5 giây
+  // // Auto slide
+  // useEffect(() => {
+  //   if (movies.length > 0) {
+  //     const interval = setInterval(() => {
+  //       setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
+  //     }, 5000); // đổi ảnh mỗi 5 giây
 
-      return () => clearInterval(interval);
-    }
-  }, [movies]);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [movies]);
 
-  const movie = movies[currentIndex];
-  const bgImage = movie
-    ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-    : "";
-
-  const heroStyle = {
-    backgroundImage: `url(${bgImage})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    height: "100vh", // full màn hình
-    width: "100%",
-    position: "relative",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    color: "#fff",
-    transition: "background-image 1s ease-in-out", // hiệu ứng mượt
-  };
+  const heroStyle = {};
   // tìm phim, chỉ được gọi khi click tìm kiếm
   const handleSelectedClick = async (movieId) => {
     try {
@@ -72,45 +63,73 @@ const Hero = () => {
   };
   return (
     <>
-      <section className="hero" style={heroStyle}>
-        <div className="hero-overlay"></div>
-        <div className="hero-content">
-          {movie && (
-            <>
-              <div className="hero-content">
-                <h1>{movie.title}</h1>
-                {movie.tagline && (
-                  <p className="movie-tagline">"{movie.tagline}"</p>
-                )}
-                <div className="hero-stats">
-                  <span className="rating">★ {movie.vote_average}/10</span>
-                  <span className="runtime">{movie.runtime} min</span>
-                  <span className="release-year">
-                    {new Date(movie.release_date).getFullYear()}
-                  </span>
-                </div>
-                <div className="genres">
-                  {movie.genres?.map((genre) => (
-                    <span key={genre.id} className="genre-tag">
-                      {genre.name}
-                    </span>
-                  ))}
-                </div>
-                <div>{movie.overview}</div>
-              </div>
-            </>
-          )}
-          <a
-            className="btn-primary"
-            onClick={() => {
-              handleSelectedClick(movie.id);
-              console.log("pop up:", movie.title);
-            }}
-          >
-            <PlayArrowIcon />
-          </a>
-        </div>
-      </section>
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        navigation
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 3000 }}
+        loop={true}
+        spaceBetween={20}
+        slidesPerView={1}
+      >
+        {movies.map((movie) => (
+          <SwiperSlide key={movie.id}>
+            <LazyLoadImage
+              src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+              alt={movie.title}
+              effect="blur" // Có thể dùng "opacity" hoặc "black-and-white"
+              wrapperProps={{
+                // If you need to, you can tweak the effect transition using the wrapper style.
+                style: { transitionDelay: "1s" },
+              }}
+              style={{
+                width: "100%",
+                height: "100vh",
+                objectFit: "cover",
+              }}
+            />
+
+            <div className="hero-overlay"></div>
+            <div>
+              {movie && (
+                <>
+                  <div className="hero-content">
+                    <h1>{movie.title}</h1>
+                    {movie.tagline && (
+                      <p className="movie-tagline">"{movie.tagline}"</p>
+                    )}
+                    <div className="hero-stats">
+                      <span className="rating">★ {movie.vote_average}/10</span>
+                      <span className="runtime">{movie.runtime} min</span>
+                      <span className="release-year">
+                        {new Date(movie.release_date).getFullYear()}
+                      </span>
+                    </div>
+                    <div className="genres">
+                      {movie.genres?.map((genre) => (
+                        <span key={genre.id} className="genre-tag">
+                          {genre.name}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="hero-overview">{movie.overview}</div>
+                  </div>
+                </>
+              )}
+              <a
+                className="btn-primary"
+                onClick={() => {
+                  handleSelectedClick(movie.id);
+                  console.log("pop up:", movie.title);
+                }}
+              >
+                <PlayArrowIcon />
+              </a>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
       {selectedMovie && (
         <div className="movie-popup">
           <div className="movie-popup-overlay" onClick={handleCloseModal} />
