@@ -11,14 +11,13 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import HeroSection from "./Component/HeroSection";
 import "./Component/HeroSection.css";
 import { Swiper, SwiperSlide } from "swiper/react";
-//import './NAV/NAV.css'
+import MList from "./Component/MList";
+import Footer from "./Component/Footer";
 
 function App() {
   const [searchterm, setSearchTerm] = useState("");
   const [searchresults, setSearchResults] = useState([]);
-  const [movies, setSearchmovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [favmovie, setFavmovies] = useState([]);
   const [categoryName, setCategoryName] = useState("Popular");
   const [selectedGenre, setSelectedGenre] = useState("");
@@ -29,18 +28,6 @@ function App() {
       setFavmovies(JSON.parse(savedFavHistory));
     }
   }, []);
-
-  //   const handleSearch = async (searchTerm) => {
-  //   const searchUrl = `${process.env.REACT_APP_BASE_URL}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&query=${searchTerm}`;
-  //   try {
-  //     const response = await fetch(searchUrl);
-  //     const data = await response.json();
-  //     setSearchResults(data.results);
-  //     setCategoryName(`Search Results: ${searchTerm}`);
-  //   } catch (error) {
-  //     console.error("Search error:", error);
-  //   }
-  // };
   const handleClickSearch = async (term) => {
     setSearchTerm(term);
     setLoading(true);
@@ -109,6 +96,10 @@ function App() {
                   categoryName={categoryName}
                   handleAddFav={handleAddFav}
                 />
+                <MList categoryName={"Popular"} handleAddFav={handleAddFav} />
+                <MList categoryName={"Action"} handleAddFav={handleAddFav} />
+                <MList categoryName={"Comedy"} handleAddFav={handleAddFav} />
+                <MList categoryName={"TV"} handleAddFav={handleAddFav} />
               </>
             }
           />
@@ -136,8 +127,12 @@ function App() {
               </>
             }
           />
+          <Route path="/phim_le" element={<div>Hello</div>} />
+          <Route path="/phim_bo" element={<div>Hello</div>} />
+          <Route path="/quoc_gia" element={<div>Hello</div>} />
         </Routes>
       </BrowserRouter>
+      <Footer />
       <ToastContainer
         position="top-right"
         autoClose={5000}

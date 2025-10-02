@@ -90,17 +90,17 @@ const Hero = () => {
             />
 
             <div className="hero-overlay"></div>
-            <div>
+            <div className="hero-content">
               {movie && (
                 <>
-                  <div className="hero-content">
+                  <div>
                     <h1>{movie.title}</h1>
                     {movie.tagline && (
                       <p className="movie-tagline">"{movie.tagline}"</p>
                     )}
                     <div className="hero-stats">
                       <span className="rating">★ {movie.vote_average}/10</span>
-                      <span className="runtime">{movie.runtime} min</span>
+                      {/* <span className="runtime">{movie.runtime} min</span> */}
                       <span className="release-year">
                         {new Date(movie.release_date).getFullYear()}
                       </span>

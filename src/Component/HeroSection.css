@@ -23,19 +23,20 @@
   max-width: none;
   display: flex;
   color: #fff;
-  bottom: 10%;
+  bottom: 20%;
   left: 5%;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
 }
 .hero-overview {
   align-items: flex-start;
   flex-direction: column;
+  font-size: 1rem;
 }
 .hero-title {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 .rating {
   border-radius: 10px;
