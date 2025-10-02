@@ -88,7 +88,25 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
               className={({ isActive }) => (isActive ? "active" : "")}
             >
               {" "}
-              USER
+              Thành Viên
+            </NavLink>
+            <NavLink
+              to="/phim_le"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              Phim lẻ
+            </NavLink>
+            <NavLink
+              to="/phim_bo"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              Phim bộ
+            </NavLink>
+            <NavLink
+              to="/quoc_gia"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              Quốc gia
             </NavLink>
           </div>
         </>
