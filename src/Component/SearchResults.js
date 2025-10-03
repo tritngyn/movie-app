@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import MovieDetail from "./MovieDetail";
 import "./SearchResults.css";
-
-const SearchResults = ({ searchTerm, results }) => {
-  const [movies, setSearchmovies] = useState([]);
+const SearchResults = ({ searchTerm, results, handleAddFav }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);
-
   const handleSelectedClick = async (movieId) => {
     try {
       if (!movieId) return;
@@ -39,7 +35,7 @@ const SearchResults = ({ searchTerm, results }) => {
               {results.map((movie) => (
                 <div
                   key={movie.id}
-                  className="movie-list-item"
+                  className="movie-card"
                   onClick={() => handleSelectedClick(movie.id)}
                 >
                   <img
@@ -47,15 +43,16 @@ const SearchResults = ({ searchTerm, results }) => {
                     alt={movie.title}
                     className="movie-poster"
                   />
-                  {/* <button
+                  <button
                     className="movie-badges"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSelectedClick(movie);
+                      handleAddFav(movie);
                     }}
                   >
-                    +
-                  </button> */}
+                    {" "}
+                    +{" "}
+                  </button>
                 </div>
               ))}
             </div>

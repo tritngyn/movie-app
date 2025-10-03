@@ -1,12 +1,14 @@
 import React from "react";
 import "./Footer.css";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import FacebookIcon from "@mui/icons-material/Facebook";
 const Footer = () => {
   return (
     <>
       <footer className="footer">
         <div className="footer-container">
           <div className="footer-section">
-            <h3>RoPhim</h3>
+            <h3>MovieApp</h3>
             <p>Xem phim trực tuyến chất lượng cao, cập nhật nhanh chóng.</p>
           </div>
           <div className="footer-section">
@@ -35,14 +37,14 @@ const Footer = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                Facebook
+                <FacebookIcon />
               </a>
               <a
                 href="https://github.com/tritngyn/"
                 target="_blank"
                 rel="noreferrer"
               >
-                Github
+                <GitHubIcon />
               </a>
             </div>
           </div>

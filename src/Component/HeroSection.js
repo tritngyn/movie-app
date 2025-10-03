@@ -91,32 +91,32 @@ const Hero = () => {
 
             <div className="hero-overlay"></div>
             <div className="hero-content">
+              <h1 className="hero-title">{movie.title}</h1>
               {movie && (
                 <>
-                  <div>
-                    <h1>{movie.title}</h1>
-                    {movie.tagline && (
-                      <p className="movie-tagline">"{movie.tagline}"</p>
-                    )}
-                    <div className="hero-stats">
-                      <span className="rating">★ {movie.vote_average}/10</span>
-                      {/* <span className="runtime">{movie.runtime} min</span> */}
-                      <span className="release-year">
-                        {new Date(movie.release_date).getFullYear()}
-                      </span>
-                    </div>
-                    <div className="genres">
-                      {movie.genres?.map((genre) => (
-                        <span key={genre.id} className="genre-tag">
-                          {genre.name}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="hero-overview">{movie.overview}</div>
+                  {movie.tagline && (
+                    <p className="movie-tagline">"{movie.tagline}"</p>
+                  )}
+                  <div className="hero-stats">
+                    <span className="hero-badge">
+                      ★ {movie.vote_average.toFixed(1)}/10
+                    </span>
+                    {/* <span className="runtime">{movie.runtime} min</span> */}
+                    <span className="release-year">
+                      {new Date(movie.release_date).getFullYear()}
+                    </span>
                   </div>
+                  <div className="genres">
+                    {movie.genres?.map((genre) => (
+                      <span key={genre.id} className="genre-tag">
+                        {movie.genre_ids}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="hero-overview">{movie.overview}</p>
                 </>
               )}
-              <a
+              <div
                 className="btn-primary"
                 onClick={() => {
                   handleSelectedClick(movie.id);
@@ -124,7 +124,7 @@ const Hero = () => {
                 }}
               >
                 <PlayArrowIcon />
-              </a>
+              </div>
             </div>
           </SwiperSlide>
         ))}

@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "./SearchBar.css";
 import { useNavigate } from "react-router-dom";
 
 function SearchBar({ OnSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -14,7 +12,11 @@ function SearchBar({ OnSearch }) {
     event.preventDefault();
     OnSearch(searchTerm);
     console.log("-> send movie title", searchTerm);
-    navigate("/searchresult");
+
+    if (searchTerm.trim() !== "") {
+      // đẩy từ khóa vào URL
+      navigate(`/searchresult?q=${encodeURIComponent(searchTerm)}`);
+    }
   };
   return (
     <>
