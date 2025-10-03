@@ -2,17 +2,22 @@ import { useState, useEffect, use } from "react";
 import axios from "axios";
 import "./MovieList.css";
 import MovieDetail from "./MovieDetail";
-
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
-
-const MovieList = ({ fetchUrl, categoryName, handleAddFav }) => {
+const MovieList = ({ categoryName, handleAddFav }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);
+
+  const constructFetchUrl = () => {
+    if (categoryName === "TV")
+      return `${process.env.REACT_APP_BASE_URL}/discover/tv?api_key=${process.env.REACT_APP_API_KEY}`;
+    if (categoryName === "Movie")
+      return `${process.env.REACT_APP_BASE_URL}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}`;
+  };
+
+  // lấy địa chỉ URL từ hàm bên trên
+  const fetchUrl = constructFetchUrl();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -50,53 +55,38 @@ const MovieList = ({ fetchUrl, categoryName, handleAddFav }) => {
     <>
       <div className="movie-list">
         <h2 className="category-name">{categoryName}</h2>
-        <Swiper
-          modules={[Navigation]}
-          spaceBetween={20}
-          slidesPerView="auto"
-          navigation
-          loop={true}
-          grabCursor={true}
-          breakpoints={{
-            320: { slidesPerView: 2 },
-            768: { slidesPerView: 4 },
-            1024: { slidesPerView: 6 },
-          }}
-        >
-          {loading ? (
-            <p>Loading movies...</p>
-          ) : movies.length === 0 ? (
-            <p>No movies available</p>
-          ) : (
-            <div className="movies-grid">
-              {movies.map((movie) => (
-                <SwiperSlide
-                  key={movie.id}
-                  className="movie-item"
-                  onClick={() => handleSelectedClick(movie.id)}
-                  style={{ width: "200px" }} // hoặc chiều rộng bạn muốn
+
+        {loading ? (
+          <p>Loading movies...</p>
+        ) : movies.length === 0 ? (
+          <p>No movies available</p>
+        ) : (
+          <div className="movies-grid">
+            {movies.map((movie) => (
+              <div
+                className="movie-card"
+                onClick={() => handleSelectedClick(movie.id)}
+              >
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title || movie.name}
+                  className="movie-poster"
+                />
+                <h4 className="movie-title">{movie.title || movie.name}</h4>
+                <button
+                  className="movie-badges"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
+                    handleAddFav(movie);
+                  }}
                 >
-                  <img
-                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    alt={movie.title || movie.name}
-                    className="movie-poster"
-                  />
-                  <h4 className="movie-title">{movie.title || movie.name}</h4>
-                  <button
-                    className="movie-badges"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
-                      handleAddFav(movie);
-                    }}
-                  >
-                    {" "}
-                    +{" "}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </div>
-          )}
-        </Swiper>
+                  {" "}
+                  +{" "}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         {selectedMovie && (
           <div className="movie-popup">
             <div className="movie-popup-overlay" onClick={handleCloseModal} />

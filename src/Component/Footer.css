@@ -2,15 +2,16 @@
   background-color: #111;
   color: #ccc;
   padding: 40px 20px 20px;
-
+  font-family: Arial, sans-serif;
   margin-top: 40px;
 }
 .footer-container {
-  display: flex;
+  display: grid;
   justify-content: space-between;
   flex-wrap: wrap;
   max-width: 1200px;
   margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 .footer-section {
   flex: 1 1 200px;
@@ -37,6 +38,10 @@
 
 .footer-section a:hover {
   color: #e50914; /* màu Netflix style */
+}
+.social-icons {
+  display: grid;
+  justify-content: space-between;
 }
 .social-icons a {
   margin-right: 10px;

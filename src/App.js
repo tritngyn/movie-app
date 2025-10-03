@@ -47,16 +47,6 @@ function App() {
     }
   };
 
-  const constructFetchUrl = (genreID) => {
-    if (genreID) {
-      return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${genreID}&api_key=${process.env.REACT_APP_API_KEY}`;
-    }
-    return `${process.env.REACT_APP_BASE_URL}/movie/popular?api_key=${process.env.REACT_APP_API_KEY}`;
-  };
-
-  // lấy địa chỉ URL từ hàm bên trên
-  const fetchUrl = constructFetchUrl(selectedGenre);
-
   //hàm cập nhập Favorite Movie
   const handleAddFav = (movie) => {
     toast("Add success!", movie.title);
@@ -91,15 +81,11 @@ function App() {
               <>
                 <HeroSection />
                 <Swiper />
-                <MovieList
-                  fetchUrl={fetchUrl}
-                  categoryName={categoryName}
-                  handleAddFav={handleAddFav}
-                />
-                <MList categoryName={"Popular"} handleAddFav={handleAddFav} />
+                <MList categoryName={"Horror"} handleAddFav={handleAddFav} />
                 <MList categoryName={"Action"} handleAddFav={handleAddFav} />
                 <MList categoryName={"Comedy"} handleAddFav={handleAddFav} />
                 <MList categoryName={"TV"} handleAddFav={handleAddFav} />
+                <MList categoryName={"Movie"} handleAddFav={handleAddFav} />
               </>
             }
           />
@@ -127,8 +113,18 @@ function App() {
               </>
             }
           />
-          <Route path="/phim_le" element={<div>Hello</div>} />
-          <Route path="/phim_bo" element={<div>Hello</div>} />
+          <Route
+            path="/phim_le"
+            element={
+              <MovieList categoryName={"Movie"} handleAddFav={handleAddFav} />
+            }
+          />
+          <Route
+            path="/phim_bo"
+            element={
+              <MovieList categoryName={"TV"} handleAddFav={handleAddFav} />
+            }
+          />
           <Route path="/quoc_gia" element={<div>Hello</div>} />
         </Routes>
       </BrowserRouter>

@@ -15,9 +15,11 @@ const MList = ({ categoryName, handleAddFav }) => {
 
   const categoryMap = {
     Popular: { type: "category", value: "popular" },
+    Horror: { type: "genre", value: 27 },
     Action: { type: "genre", value: 28 },
     Comedy: { type: "genre", value: 35 },
-    TV: { type: "category", value: "tv" },
+    Movie: { type: "discover", value: "movie" },
+    TV: { type: "discover", value: "tv" },
   };
 
   useEffect(() => {
@@ -31,6 +33,13 @@ const MList = ({ categoryName, handleAddFav }) => {
       if (category.type === "category") {
         console.log("category:", category.value);
         return `${process.env.REACT_APP_BASE_URL}/movie/${category.value}?api_key=${process.env.REACT_APP_API_KEY}`;
+      }
+      if (category.type === "discover") {
+        console.log("discover:", category.value);
+        if (category.value === "tv")
+          return `${process.env.REACT_APP_BASE_URL}/discover/tv?api_key=${process.env.REACT_APP_API_KEY}`;
+        if (category.value === "movie")
+          return `${process.env.REACT_APP_BASE_URL}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}`;
       }
     };
     const fetchMovies = async () => {
