@@ -70,13 +70,13 @@ body {
   color: #ff5e00;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  /* text-overflow: ellipsis; */
   width: 100%;
 }
 
-.movie-title :hover {
+/* .movie-title :hover {
   color: #fff;
-}
+} */
 
 /* Movie Grid Styling */
 .movies-grid {

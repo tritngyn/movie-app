@@ -1,92 +1,183 @@
-import React, { use, useState } from "react";
-import "./MovieDetail.css";
+import React, { useEffect, useState } from "react";
+import "./MovieDetail.scss";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-const MovieDetail = ({ movie }) => {
+const MovieDetail = () => {
+  const { id, category } = useParams();
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("trailer");
+  console.log(id, category);
+  useEffect(() => {
+    const fetchMovie = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_BASE_URL}/${category}/${id}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar`
+        );
+        setMovie(res.data);
+      } catch (err) {
+        console.error("Error fetching movie detail:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMovie();
+  }, [id, category]);
+
+  if (loading) return <p>Loading...</p>;
+  if (!movie) return <p>Không có dữ liệu phim.</p>;
+
+  console.log("fetch:", category);
+
   return (
-    <>
-      <div className="movie-details-container">
-        {/* Hero Section with Backdrop */}
-        <div
-          className="movie-hero"
-          style={{
-            backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`,
-          }}
-        >
-          <div className="hero-content">
+    <div className="movie-detail-page">
+      <div
+        className="hero"
+        style={{
+          backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`,
+        }}
+      >
+        <div className="overlay"></div>
+      </div>
+      {/* MAIN WRAPPER */}
+      <div className="movie-container">
+        {/* LEFT SECTION */}
+        <div className="left-section">
+          <img
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            alt={movie.title}
+            className="poster"
+          />
+
+          <div className="movie-info">
             <h1>{movie.title}</h1>
-            {movie.tagline && (
-              <p className="movie-tagline">"{movie.tagline}"</p>
-            )}
-            <div className="hero-stats">
-              <span className="rating">★ {movie.vote_average}/10</span>
-              <span className="runtime">{movie.runtime} min</span>
-              <span className="release-year">
-                {new Date(movie.release_date).getFullYear()}
-              </span>
+            <p className="subtitle">{movie.original_title}</p>
+
+            <div className="tags">
+              <span>IMDb {movie.vote_average?.toFixed(1)}</span>
+              <span>{movie.runtime} phút</span>
+              <span>{movie.release_date?.slice(0, 4)}</span>
             </div>
-            <div className="genres">
-              {movie.genres?.map((genre) => (
-                <span key={genre.id} className="genre-tag">
-                  {genre.name}
-                </span>
-              ))}
+
+            <div className="overview">
+              <h3>Giới thiệu</h3>
+              <p>{movie.overview}</p>
             </div>
           </div>
         </div>
 
-        <div className="main-content">
-          <section className="overview-section">
-            <h2>Overview</h2>
-            <p>{movie.overview}</p>
-          </section>
-
-          <section className="trailer-section">
-            <h2>Official Trailer</h2>
-            <div className="trailer-container">
-              {movie.videos?.results?.find(
-                (video) => video.type === "Trailer" && video.site === "YouTube"
-              ) ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${
-                    movie.videos.results.find(
-                      (video) =>
-                        video.type === "Trailer" && video.site === "YouTube"
-                    ).key
-                  }`}
-                  title="Movie Trailer"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <p>No trailer available</p>
-              )}
+        {/* RIGHT SECTION */}
+        <div className="right-section">
+          <div className="buttons">
+            <button className="watch">▶ Xem Ngay</button>
+            <div className="actions">
+              <span>Yêu thích</span>
+              <span>Thêm vào</span>
+              <span>Chia sẻ</span>
+              <span>Bình luận</span>
             </div>
-          </section>
+          </div>
+          {/* NAVIGATION TABS */}
+          <div className="tab-nav">
+            {["trailer", "gallery", "cast", "recommend"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={activeTab === tab ? "active" : ""}
+              >
+                {
+                  {
+                    trailer: "Trailer",
+                    gallery: "Gallery",
+                    cast: "Diễn viên",
+                    recommend: "Đề xuất",
+                  }[tab]
+                }
+              </button>
+            ))}
+          </div>
 
-          <section className="cast-section">
-            <h2>Featured Cast</h2>
-            <div className="cast-grid">
-              {movie.credits?.cast?.slice(0, 9).map((person) => (
-                <div key={person.id} className="cast-card">
-                  <div className="cast-image">
-                    <img
-                      src={`https://image.tmdb.org/t/p/w200${person.profile_path}`}
-                      alt={person.name}
-                      onError={(e) => (e.target.src = "/placeholder.jpg")}
+          {/* TAB CONTENT */}
+          <div className="tab-content">
+            {activeTab === "trailer" && (
+              <div className="tab-item">
+                <h2>Trailer</h2>
+                <div className="video-wrapper">
+                  {movie.videos?.results?.find(
+                    (v) => v.type === "Trailer" && v.site === "YouTube"
+                  ) ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${
+                        movie.videos.results.find(
+                          (v) => v.type === "Trailer" && v.site === "YouTube"
+                        ).key
+                      }`}
+                      title="Trailer"
+                      allowFullScreen
                     />
-                  </div>
-                  <div className="cast-info">
-                    <h3>{person.name}</h3>
-                    <p>{person.character}</p>
-                  </div>
+                  ) : (
+                    <p>Không có trailer khả dụng</p>
+                  )}
                 </div>
-              ))}
-            </div>
-          </section>
+              </div>
+            )}
+
+            {activeTab === "gallery" && (
+              <section className="gallery">
+                <h2>Gallery</h2>
+                <div className="img-grid">
+                  {movie.images?.backdrops?.slice(0, 8).map((img, i) => (
+                    <img
+                      key={i}
+                      src={`https://image.tmdb.org/t/p/w500${img.file_path}`}
+                      alt=""
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {activeTab === "cast" && (
+              <section className="cast">
+                <h2>Diễn viên nổi bật</h2>
+                <div className="cast-grid">
+                  {movie.credits?.cast?.slice(0, 10).map((p) => (
+                    <div key={p.id} className="cast-card">
+                      <img
+                        src={
+                          p.profile_path
+                            ? `https://image.tmdb.org/t/p/w200${p.profile_path}`
+                            : "/placeholder.jpg"
+                        }
+                        alt={p.name}
+                      />
+                      <h3>{p.name}</h3>
+                      <p>{p.character}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {activeTab === "recommend" && (
+              <div className="tab-item">
+                <h2>Đề xuất</h2>
+                <p>Các phim tương tự...</p>
+              </div>
+            )}
+          </div>
+
+          {/* COMMENT SECTION */}
+          <div className="comment-section">
+            <h2>Bình luận</h2>
+            <textarea placeholder="Nhập bình luận của bạn..." />
+            <button>Gửi bình luận</button>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
+
 export default MovieDetail;

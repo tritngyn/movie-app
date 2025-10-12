@@ -1,4 +1,4 @@
-import { NavLink, useSearchParams } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import { faAlignRight, faBars } from "@fortawesome/free-solid-svg-icons";
@@ -7,12 +7,14 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import SearchBar from "../Component/SearchBar";
 import "./NAV.css";
+
 library.add(faBars);
 
 const NAV = ({ onSelectGenre, handleClickSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchBarOpen, setIsSBOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
   const genres = [
     { id: 28, name: "Action" },
     { id: 35, name: "Comedy" },
@@ -34,7 +36,8 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
     onSelectGenre(genreID, genreName);
     setIsMenuOpen(false);
     const movieListElement = document.querySelector(".movie-list");
-    movieListElement.scrollIntoView({ behavior: "smooth" });
+    if (movieListElement)
+      movieListElement.scrollIntoView({ behavior: "smooth" });
   };
   // fade-in
   useEffect(() => {
@@ -65,12 +68,13 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
                     Popular
                   </li>
                   {genres.map((genre) => (
-                    <li
+                    <Link
+                      to={`/the_loai/${genre.id}`}
                       key={genre.id}
                       onClick={() => handleGenreClick(genre.id, genre.name)}
                     >
                       {genre.name}
-                    </li>
+                    </Link>
                   ))}
                 </ul>
               )}

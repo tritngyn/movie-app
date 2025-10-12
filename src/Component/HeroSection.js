@@ -10,13 +10,14 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-
-const Hero = () => {
+import { Navigation, Pagination, Autoplay, Thumbs } from "swiper/modules";
+import { Link } from "react-router-dom";
+import { faL, faThumbsDown } from "@fortawesome/free-solid-svg-icons";
+const Hero = ({ categoryName }) => {
   const [currentIndex, setCurrentIndex] = useState("");
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   useEffect(() => {
     const API_KEY = process.env.REACT_APP_API_KEY;
@@ -44,7 +45,6 @@ const Hero = () => {
   //   }
   // }, [movies]);
 
-  const heroStyle = {};
   // tìm phim, chỉ được gọi khi click tìm kiếm
   const handleSelectedClick = async (movieId) => {
     try {
@@ -64,13 +64,17 @@ const Hero = () => {
   return (
     <>
       <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
+        modules={[Navigation, Pagination, Autoplay, Thumbs]}
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000 }}
         loop={true}
         spaceBetween={20}
+        thumbs={{
+          swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+        }}
         slidesPerView={1}
+        className="hero-swiper"
       >
         {movies.map((movie) => (
           <SwiperSlide key={movie.id}>
@@ -116,20 +120,38 @@ const Hero = () => {
                   <p className="hero-overview">{movie.overview}</p>
                 </>
               )}
-              <div
+              <Link
                 className="btn-primary"
-                onClick={() => {
-                  handleSelectedClick(movie.id);
-                  console.log("pop up:", movie.title);
-                }}
+                to={`/${categoryName.toLowerCase()}/${movie.id}`}
               >
                 <PlayArrowIcon />
-              </div>
+              </Link>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
-
+      {/* Carousel thumbnail */}
+      <Swiper
+        onSwiper={setThumbsSwiper}
+        modules={[Thumbs, Autoplay]}
+        spaceBetween={10}
+        slidesPerView={5}
+        freeMode
+        loop={true}
+        watchSlidesProgress={true}
+        slideToClickedSlide={true} // <-- cho click đổi slide chính
+        autoplay={{ delay: 3000, disableOnInteraction: false }} // <-- auto-scroll thumbs
+        className="hero-thumbs"
+      >
+        {movies.map((movie, index) => (
+          <SwiperSlide key={index} className="thumb-slide">
+            <img
+              src={`https://image.tmdb.org/t/p/w300${movie.backdrop_path}`}
+              alt={movie.title}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
       {selectedMovie && (
         <div className="movie-popup">
           <div className="movie-popup-overlay" onClick={handleCloseModal} />
@@ -137,7 +159,7 @@ const Hero = () => {
             <button className="popup-close-btn" onClick={handleCloseModal}>
               <ClearIcon />
             </button>
-            <MovieDetail movie={selectedMovie} />
+            <MovieDetail />
           </div>
         </div>
       )}

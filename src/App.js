@@ -6,14 +6,14 @@ import Favorite from "./Component/Favortite";
 import axios from "axios";
 import NAV from "./NAV/NAV";
 import { ToastContainer, toast } from "react-toastify";
-
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import HeroSection from "./Component/HeroSection";
 import "./Component/HeroSection.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import MList from "./Component/MList";
 import Footer from "./Component/Footer";
-
+import MovieDetail from "./Component/MovieDetail";
+import GenreList from "./Component/GenreList";
 function App() {
   const [searchterm, setSearchTerm] = useState("");
   const [searchresults, setSearchResults] = useState([]);
@@ -29,6 +29,7 @@ function App() {
     }
   }, []);
   const handleClickSearch = async (term) => {
+    console.log("search movie:", term);
     setSearchTerm(term);
     setLoading(true);
     try {
@@ -79,11 +80,11 @@ function App() {
             path="/"
             element={
               <>
-                <HeroSection />
+                <HeroSection categoryName={"Movie"} />
                 <Swiper />
                 <MList categoryName={"Horror"} handleAddFav={handleAddFav} />
                 <MList categoryName={"Action"} handleAddFav={handleAddFav} />
-                <MList categoryName={"Comedy"} handleAddFav={handleAddFav} />
+                <MList categoryName={"Comedy"} hasndleAddFav={handleAddFav} />
                 <MList categoryName={"TV"} handleAddFav={handleAddFav} />
                 <MList categoryName={"Movie"} handleAddFav={handleAddFav} />
               </>
@@ -119,12 +120,27 @@ function App() {
               <MovieList categoryName={"Movie"} handleAddFav={handleAddFav} />
             }
           />
+
           <Route
             path="/phim_bo"
             element={
               <MovieList categoryName={"TV"} handleAddFav={handleAddFav} />
             }
           />
+          {/* Danh mục thể loại */}
+          <Route
+            path="/the_loai/:genre"
+            element={
+              <GenreList
+                categoryName={categoryName}
+                handleAddFav={handleAddFav}
+              />
+            }
+          />
+          {/* Chi tiết phim */}
+          <Route path="/:category/:id" element={<MovieDetail />} />
+
+          {/* Quốc gia (tùy chọn) */}
           <Route path="/quoc_gia" element={<div>Hello</div>} />
         </Routes>
       </BrowserRouter>

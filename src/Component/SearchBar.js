@@ -1,9 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./SearchBar.css";
 import { useNavigate } from "react-router-dom";
 
 function SearchBar({ OnSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm) {
+        OnSearch(searchTerm);
+      }
+    }, 500); // chờ 500ms
+
+    return () => clearTimeout(timer); // cleanup
+  }, [searchTerm]);
+
   const navigate = useNavigate();
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value);
