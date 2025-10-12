@@ -17,7 +17,7 @@ const SearchResults = ({ searchTerm, results, handleAddFav }) => {
       console.error("Error fetching movie details:", error);
     }
   };
-  console.log("search results find:", searchTerm);
+  console.log("selected movie:", searchTerm);
 
   const handleCloseModal = () => {
     setSelectedMovie(null);

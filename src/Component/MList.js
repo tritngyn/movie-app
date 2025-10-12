@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./MovieList.css";
 import MovieDetail from "./MovieDetail";
-
+import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 const MList = ({ categoryName, handleAddFav }) => {
   const [movies, setMovies] = useState([]);
@@ -56,18 +57,18 @@ const MList = ({ categoryName, handleAddFav }) => {
     fetchMovies();
   }, [categoryName]);
 
-  // tìm phim, chỉ được gọi khi click tìm kiếm
-  const handleSelectedClick = async (movieId) => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar,external_ids`
-      );
-      setSelectedMovie(response.data);
-      document.body.style.overflow = "hidden";
-    } catch (error) {
-      console.error("Error fetching movie details:", error);
-    }
-  };
+  // // tìm phim, chỉ được gọi khi click tìm kiếm
+  // const handleSelectedClick = async (movieId) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_BASE_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar,external_ids`
+  //     );
+  //     setSelectedMovie(response.data);
+  //     document.body.style.overflow = "hidden";
+  //   } catch (error) {
+  //     console.error("Error fetching movie details:", error);
+  //   }
+  // };
   const handleCloseModal = () => {
     setSelectedMovie(null);
     document.body.style.overflow = "unset";
@@ -81,9 +82,10 @@ const MList = ({ categoryName, handleAddFav }) => {
           modules={[Navigation]}
           spaceBetween={20}
           slidesPerView="auto"
+          grabCursor={true}
+          preventClicksPropagation={false}
           navigation
           loop={true}
-          grabCursor={true}
           breakpoints={{
             320: { slidesPerView: 2 },
             768: { slidesPerView: 4 },
@@ -98,17 +100,24 @@ const MList = ({ categoryName, handleAddFav }) => {
             <div className="movies-grid">
               {movies.map((movie) => (
                 <SwiperSlide
-                  key={movie.id}
                   className="movie-item"
-                  onClick={() => handleSelectedClick(movie.id)}
+                  key={movie.id}
+                  // onClick={() => handleSelectedClick(movie.id)}
                   style={{ width: "200px" }} // hoặc chiều rộng bạn muốn
                 >
-                  <img
-                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    alt={movie.title || movie.name}
-                    className="movie-poster"
-                  />
-                  <h4 className="movie-title">{movie.title || movie.name}</h4>
+                  <Link
+                    to={`/${categoryName === "TV" ? "tv" : "movie"}/${
+                      movie.id
+                    }`}
+                    className="movie-card"
+                  >
+                    <img
+                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                      alt={movie.title || movie.name}
+                      className="movie-poster"
+                    />
+                    <h4 className="movie-title">{movie.title || movie.name}</h4>
+                  </Link>
                   <button
                     className="movie-badges"
                     onClick={(e) => {
@@ -128,10 +137,7 @@ const MList = ({ categoryName, handleAddFav }) => {
           <div className="movie-popup">
             <div className="movie-popup-overlay" onClick={handleCloseModal} />
             <div className="movie-popup-content">
-              <button className="popup-close-btn" onClick={handleCloseModal}>
-                ×
-              </button>
-              <MovieDetail movie={selectedMovie} />
+              <MovieDetail />
             </div>
           </div>
         )}

@@ -2,12 +2,15 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import MovieDetail from "./MovieDetail";
+import { Link, useParams } from "react-router-dom";
 
 const Favorite = ({ results, favmovie, fetchUrl, DeleteFav }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const { id } = useParams();
+
   useEffect(() => {
     const fetchMovies = async () => {
       setLoading(true);
@@ -24,17 +27,17 @@ const Favorite = ({ results, favmovie, fetchUrl, DeleteFav }) => {
     fetchMovies();
   }, [fetchUrl]);
   // tìm phim, chỉ được gọi khi click tìm kiếm
-  const handleSelectedClick = async (movieId) => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar,external_ids`
-      );
-      setSelectedMovie(response.data);
-      document.body.style.overflow = "hidden";
-    } catch (error) {
-      console.error("Error fetching movie details:", error);
-    }
-  };
+  // const handleSelectedClick = async (movieId) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_BASE_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar,external_ids`
+  //     );
+  //     setSelectedMovie(response.data);
+  //     document.body.style.overflow = "hidden";
+  //   } catch (error) {
+  //     console.error("Error fetching movie details:", error);
+  //   }
+  // };
   const handleCloseModal = () => {
     setSelectedMovie(null);
     document.body.style.overflow = "unset";
@@ -49,10 +52,11 @@ const Favorite = ({ results, favmovie, fetchUrl, DeleteFav }) => {
       ) : (
         <div className="movies-grid">
           {favmovie.map((movie) => (
-            <div
+            <Link
               key={movie.id}
               className="movie-item"
-              onClick={() => handleSelectedClick(movie.id)}
+              to={`/movie/${movie.id}`}
+              // onClick={() => handleSelectedClick(movie.id)}
             >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -70,7 +74,7 @@ const Favorite = ({ results, favmovie, fetchUrl, DeleteFav }) => {
                 {" "}
                 X{" "}
               </button>
-            </div>
+            </Link>
           ))}
         </div>
       )}

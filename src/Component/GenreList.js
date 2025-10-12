@@ -5,17 +5,15 @@ import MovieDetail from "./MovieDetail";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useParams, Link } from "react-router-dom";
-const MovieList = ({ categoryName, handleAddFav }) => {
+const GenreList = ({ categoryName, handleAddFav }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const { category } = useParams();
+  const { genre } = useParams();
 
   const constructFetchUrl = () => {
-    if (categoryName === "TV")
-      return `${process.env.REACT_APP_BASE_URL}/discover/tv?api_key=${process.env.REACT_APP_API_KEY}`;
-    if (categoryName === "Movie")
-      return `${process.env.REACT_APP_BASE_URL}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}`;
+    if (genre)
+      return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${genre}&api_key=${process.env.REACT_APP_API_KEY}`;
   };
 
   // lấy địa chỉ URL từ hàm bên trên
@@ -56,7 +54,7 @@ const MovieList = ({ categoryName, handleAddFav }) => {
               <Link
                 onClick={() => console.log("to page:", movie.id)}
                 key={movie.id}
-                to={`/${categoryName.toLowerCase()}/${movie.id}`}
+                to={`/movie/${movie.id}`}
                 className="movie-card"
               >
                 <img
@@ -83,9 +81,6 @@ const MovieList = ({ categoryName, handleAddFav }) => {
           <div className="movie-popup">
             <div className="movie-popup-overlay" onClick={handleCloseModal} />
             <div className="movie-popup-content">
-              <button className="popup-close-btn" onClick={handleCloseModal}>
-                ×
-              </button>
               <MovieDetail />
             </div>
           </div>
@@ -95,4 +90,4 @@ const MovieList = ({ categoryName, handleAddFav }) => {
   );
 };
 
-export default MovieList;
+export default GenreList;
