@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./MovieList.css";
-import MovieDetail from "./MovieDetail";
+import styles from "./MovieList.module.css";
 import "swiper/css";
 import "swiper/css/navigation";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 const MovieList = ({ categoryName, handleAddFav }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const { category } = useParams();
-
   const constructFetchUrl = () => {
     if (categoryName === "TV")
       return `${process.env.REACT_APP_BASE_URL}/discover/tv?api_key=${process.env.REACT_APP_API_KEY}`;
@@ -35,63 +31,37 @@ const MovieList = ({ categoryName, handleAddFav }) => {
     };
     fetchMovies();
   }, [fetchUrl]);
-
-  const handleCloseModal = () => {
-    setSelectedMovie(null);
-    document.body.style.overflow = "unset";
-  };
-
   return (
-    <>
-      <div className="movie-list">
-        <h2 className="category-name">{categoryName}</h2>
+    <div className={styles["movie-list"]}>
+      <h2 className={styles["category-name"]}>{categoryName}</h2>
 
-        {loading ? (
-          <p>Loading movies...</p>
-        ) : movies.length === 0 ? (
-          <p>No movies available</p>
-        ) : (
-          <div className="movies-grid">
-            {movies.map((movie) => (
+      {loading ? (
+        <p className={styles["loading-text"]}>Loading movies...</p>
+      ) : movies.length === 0 ? (
+        <p className={styles["no-movie"]}>No movies available</p>
+      ) : (
+        <div className={styles["movies-grid"]}>
+          {movies.map((movie) => (
+            <div className={styles["movie-item"]} key={movie.id}>
               <Link
-                onClick={() => console.log("to page:", movie.id)}
-                key={movie.id}
                 to={`/${categoryName.toLowerCase()}/${movie.id}`}
-                className="movie-card"
+                className={styles["movie-card"]}
+                onClick={() => console.log("to page:", movie.id)}
               >
                 <img
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title || movie.name}
-                  className="movie-poster"
+                  className={styles["movie-poster"]}
                 />
-                <h4 className="movie-title">{movie.title || movie.name}</h4>
-                <button
-                  className="movie-badges"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
-                    handleAddFav(movie);
-                  }}
-                >
-                  {" "}
-                  +{" "}
-                </button>
+                <h4 className={styles["movie-title"]}>
+                  {movie.title || movie.name}
+                </h4>
               </Link>
-            ))}
-          </div>
-        )}
-        {selectedMovie && (
-          <div className="movie-popup">
-            <div className="movie-popup-overlay" onClick={handleCloseModal} />
-            <div className="movie-popup-content">
-              <button className="popup-close-btn" onClick={handleCloseModal}>
-                ×
-              </button>
-              <MovieDetail />
             </div>
-          </div>
-        )}
-      </div>
-    </>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

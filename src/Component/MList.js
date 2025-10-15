@@ -1,18 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./MovieList.css";
-import MovieDetail from "./MovieDetail";
+import styles from "./MList.module.scss";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
-import { fas } from "@fortawesome/free-solid-svg-icons";
 
 const MList = ({ categoryName, handleAddFav }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState(null);
 
   const categoryMap = {
     Popular: { type: "category", value: "popular" },
@@ -28,15 +25,12 @@ const MList = ({ categoryName, handleAddFav }) => {
       const category = categoryMap[categoryName];
       if (!category) return "";
       if (category.type === "genre") {
-        console.log("genre:", category.value);
         return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${category.value}&api_key=${process.env.REACT_APP_API_KEY}`;
       }
       if (category.type === "category") {
-        console.log("category:", category.value);
         return `${process.env.REACT_APP_BASE_URL}/movie/${category.value}?api_key=${process.env.REACT_APP_API_KEY}`;
       }
       if (category.type === "discover") {
-        console.log("discover:", category.value);
         if (category.value === "tv")
           return `${process.env.REACT_APP_BASE_URL}/discover/tv?api_key=${process.env.REACT_APP_API_KEY}`;
         if (category.value === "movie")
@@ -57,90 +51,57 @@ const MList = ({ categoryName, handleAddFav }) => {
     fetchMovies();
   }, [categoryName]);
 
-  // // tìm phim, chỉ được gọi khi click tìm kiếm
-  // const handleSelectedClick = async (movieId) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${process.env.REACT_APP_BASE_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar,external_ids`
-  //     );
-  //     setSelectedMovie(response.data);
-  //     document.body.style.overflow = "hidden";
-  //   } catch (error) {
-  //     console.error("Error fetching movie details:", error);
-  //   }
-  // };
-  const handleCloseModal = () => {
-    setSelectedMovie(null);
-    document.body.style.overflow = "unset";
-  };
-
   return (
     <>
-      <div className="movie-list">
-        <h2 className="category-name">{categoryName}</h2>
+      <div className={styles["movie-list"]}>
+        <h2 className={styles["category-name"]}>{categoryName}</h2>
         <Swiper
           modules={[Navigation]}
-          spaceBetween={20}
+          spaceBetween={24}
           slidesPerView="auto"
           grabCursor={true}
-          preventClicksPropagation={false}
           navigation
           loop={true}
           breakpoints={{
             320: { slidesPerView: 2 },
-            768: { slidesPerView: 4 },
-            1024: { slidesPerView: 6 },
+            640: { slidesPerView: 3 },
+            1024: { slidesPerView: 5 },
+            1440: { slidesPerView: 6 },
+          }}
+          style={{
+            width: "100%",
+            paddingBottom: "10px",
           }}
         >
-          {loading ? (
-            <p>Loading movies...</p>
-          ) : movies.length === 0 ? (
-            <p>No movies available</p>
-          ) : (
-            <div className="movies-grid">
-              {movies.map((movie) => (
-                <SwiperSlide
-                  className="movie-item"
-                  key={movie.id}
-                  // onClick={() => handleSelectedClick(movie.id)}
-                  style={{ width: "200px" }} // hoặc chiều rộng bạn muốn
-                >
-                  <Link
-                    to={`/${categoryName === "TV" ? "tv" : "movie"}/${
-                      movie.id
-                    }`}
-                    className="movie-card"
-                  >
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                      alt={movie.title || movie.name}
-                      className="movie-poster"
-                    />
-                    <h4 className="movie-title">{movie.title || movie.name}</h4>
-                  </Link>
-                  <button
-                    className="movie-badges"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
-                      handleAddFav(movie);
-                    }}
-                  >
-                    {" "}
-                    +{" "}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </div>
-          )}
+          {movies.map((movie) => (
+            <SwiperSlide
+              className={styles["movie-item"]}
+              key={movie.id}
+              style={{
+                flex: "0 0 auto",
+                width: "calc(100% / 6)", // chia đều 6 ô
+                maxWidth: "220px", // nhưng không vượt quá 220px
+                flexDirection: "column",
+                alignItems: "flex-start",
+                background: "transparent",
+              }}
+            >
+              <Link
+                to={`/${categoryName === "TV" ? "tv" : "movie"}/${movie.id}`}
+                className={styles["movie-card"]}
+              >
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title || movie.name}
+                  className={styles["movie-poster"]}
+                />
+                <h4 className={styles["movie-title"]}>
+                  {movie.title || movie.name}
+                </h4>
+              </Link>
+            </SwiperSlide>
+          ))}
         </Swiper>
-        {selectedMovie && (
-          <div className="movie-popup">
-            <div className="movie-popup-overlay" onClick={handleCloseModal} />
-            <div className="movie-popup-content">
-              <MovieDetail />
-            </div>
-          </div>
-        )}
       </div>
     </>
   );

@@ -2,18 +2,17 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import MovieList from "./Component/MovieList";
 import SearchResults from "./Component/SearchResults";
-import Favorite from "./Component/Favortite";
+import User from "./Component/User";
 import axios from "axios";
 import NAV from "./NAV/NAV";
 import { ToastContainer, toast } from "react-toastify";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import HeroSection from "./Component/HeroSection";
-import "./Component/HeroSection.css";
-import { Swiper, SwiperSlide } from "swiper/react";
 import MList from "./Component/MList";
 import Footer from "./Component/Footer";
 import MovieDetail from "./Component/MovieDetail";
 import GenreList from "./Component/GenreList";
+
 function App() {
   const [searchterm, setSearchTerm] = useState("");
   const [searchresults, setSearchResults] = useState([]);
@@ -81,7 +80,6 @@ function App() {
             element={
               <>
                 <HeroSection categoryName={"Movie"} />
-                <Swiper />
                 <MList categoryName={"Horror"} handleAddFav={handleAddFav} />
                 <MList categoryName={"Action"} handleAddFav={handleAddFav} />
                 <MList categoryName={"Comedy"} hasndleAddFav={handleAddFav} />
@@ -104,7 +102,7 @@ function App() {
             path="/user"
             element={
               <>
-                <Favorite
+                <User
                   results={searchresults}
                   favmovie={favmovie.filter(
                     (movie) => movie && movie.poster_path
@@ -138,7 +136,10 @@ function App() {
             }
           />
           {/* Chi tiết phim */}
-          <Route path="/:category/:id" element={<MovieDetail />} />
+          <Route
+            path="/:category/:id"
+            element={<MovieDetail handleAddFav={handleAddFav} />}
+          />
 
           {/* Quốc gia (tùy chọn) */}
           <Route path="/quoc_gia" element={<div>Hello</div>} />

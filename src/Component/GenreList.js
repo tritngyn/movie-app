@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./MovieList.css";
-import MovieDetail from "./MovieDetail";
+import styles from "./MovieList.module.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useParams, Link } from "react-router-dom";
-const GenreList = ({ categoryName, handleAddFav }) => {
+const GenreList = ({ categoryName }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState(null);
   const { genre } = useParams();
 
   const constructFetchUrl = () => {
@@ -16,7 +14,6 @@ const GenreList = ({ categoryName, handleAddFav }) => {
       return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${genre}&api_key=${process.env.REACT_APP_API_KEY}`;
   };
 
-  // lấy địa chỉ URL từ hàm bên trên
   const fetchUrl = constructFetchUrl();
 
   useEffect(() => {
@@ -33,56 +30,45 @@ const GenreList = ({ categoryName, handleAddFav }) => {
     };
     fetchMovies();
   }, [fetchUrl]);
-
-  const handleCloseModal = () => {
-    setSelectedMovie(null);
-    document.body.style.overflow = "unset";
-  };
-
   return (
     <>
-      <div className="movie-list">
-        <h2 className="category-name">{categoryName}</h2>
+      <div className={styles["movie-list"]}>
+        <h2 className={styles["category-name"]}>{categoryName}</h2>
 
         {loading ? (
           <p>Loading movies...</p>
         ) : movies.length === 0 ? (
           <p>No movies available</p>
         ) : (
-          <div className="movies-grid">
+          <div className={styles["movies-grid"]}>
             {movies.map((movie) => (
-              <Link
-                onClick={() => console.log("to page:", movie.id)}
-                key={movie.id}
-                to={`/movie/${movie.id}`}
-                className="movie-card"
-              >
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title || movie.name}
-                  className="movie-poster"
-                />
-                <h4 className="movie-title">{movie.title || movie.name}</h4>
-                <button
-                  className="movie-badges"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Ngăn sự kiện click lan lên div cha
-                    handleAddFav(movie);
-                  }}
+              <div className={styles["movie-item"]} key={movie.id}>
+                <Link
+                  onClick={() => console.log("to page:", movie.id)}
+                  to={`/movie/${movie.id}`}
+                  className={styles["movie-card"]}
                 >
-                  {" "}
-                  +{" "}
-                </button>
-              </Link>
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    alt={movie.title || movie.name}
+                    className={styles["movie-poster"]}
+                  />
+                  <h4 className={styles["movie-title"]}>
+                    {movie.title || movie.name}
+                  </h4>
+                  {/* <button
+                    className={styles["movie-badges"]}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddFav(movie);
+                    }}
+                  >
+                    {" "}
+                    +{" "}
+                  </button> */}
+                </Link>
+              </div>
             ))}
-          </div>
-        )}
-        {selectedMovie && (
-          <div className="movie-popup">
-            <div className="movie-popup-overlay" onClick={handleCloseModal} />
-            <div className="movie-popup-content">
-              <MovieDetail />
-            </div>
           </div>
         )}
       </div>
