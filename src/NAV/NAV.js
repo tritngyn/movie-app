@@ -59,14 +59,6 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
               </button>
               {isMenuOpen && (
                 <ul className="dropdown-menu">
-                  <li
-                    onClick={() => {
-                      onSelectGenre("", "Popular");
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    Popular
-                  </li>
                   {genres.map((genre) => (
                     <Link
                       to={`/the_loai/${genre.id}`}

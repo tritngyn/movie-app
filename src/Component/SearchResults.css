@@ -42,6 +42,7 @@ h2 {
 
 /* Update movie card styles */
 .movie-card {
+  text-decoration: none;
   width: 200px;
   height: auto;
   display: flex;
@@ -58,7 +59,8 @@ h2 {
 }
 
 .movie-title {
-  color: #ff5e00;
+  position: relative;
+  color: #fff;
   margin-top: 8px;
   font-size: 14px;
   text-align: center;

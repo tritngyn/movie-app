@@ -1,28 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
-import MovieDetail from "./MovieDetail";
 import "./SearchResults.css";
-const SearchResults = ({ searchTerm, results, handleAddFav }) => {
-  const [loading, setLoading] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const handleSelectedClick = async (movieId) => {
-    try {
-      if (!movieId) return;
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&append_to_response=videos,images,credits,reviews,similar,external_ids`
-      );
-      setSelectedMovie(response.data);
-      document.body.style.overflow = "hidden";
-    } catch (error) {
-      console.error("Error fetching movie details:", error);
-    }
-  };
-  console.log("selected movie:", searchTerm);
+import { Link } from "react-router-dom";
 
-  const handleCloseModal = () => {
-    setSelectedMovie(null);
-    document.body.style.overflow = "unset";
-  };
+const SearchResults = ({ searchTerm, results }) => {
+  const [loading, setLoading] = useState(false);
+  console.log("selected movie:", searchTerm);
   return (
     <>
       <div className="container">
@@ -33,44 +15,28 @@ const SearchResults = ({ searchTerm, results, handleAddFav }) => {
             </h2>
             <div className="movies-grid">
               {results.map((movie) => (
-                <div
-                  key={movie.id}
-                  className="movie-card"
-                  onClick={() => handleSelectedClick(movie.id)}
-                >
-                  <img
-                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    alt={movie.title}
-                    className="movie-poster"
-                  />
-                  <button
-                    className="movie-badges"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddFav(movie);
-                    }}
+                <>
+                  <Link
+                    key={movie.id}
+                    className="movie-card"
+                    to={`/movie/${movie.id}`}
                   >
-                    {" "}
-                    +{" "}
-                  </button>
-                </div>
+                    <img
+                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                      alt={movie.title}
+                      className="movie-poster"
+                    />
+                    <span className="movie-title" style={{}}>
+                      {" "}
+                      {movie.title || movie.name}
+                    </span>
+                  </Link>
+                </>
               ))}
             </div>
           </div>
         )}
       </div>
-
-      {selectedMovie && (
-        <div className="movie-popup">
-          <div className="movie-popup-overlay" onClick={handleCloseModal} />
-          <div className="movie-popup-content">
-            <button className="popup-close-btn" onClick={handleCloseModal}>
-              ×
-            </button>
-            <MovieDetail movie={selectedMovie} />
-          </div>
-        </div>
-      )}
     </>
   );
 };

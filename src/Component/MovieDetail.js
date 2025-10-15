@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import "./MovieDetail.scss";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-
-const MovieDetail = () => {
+import Comment from "./Comment";
+const MovieDetail = ({ handleAddFav }) => {
   const { id, category } = useParams();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("trailer");
   console.log(id, category);
+  // const [comment, setComment] = useState("");
+  // const [comments, setComments] = useState([]);
   useEffect(() => {
     const fetchMovie = async () => {
       try {
@@ -72,7 +74,13 @@ const MovieDetail = () => {
           <div className="buttons">
             <button className="watch">▶ Xem Ngay</button>
             <div className="actions">
-              <span>Yêu thích</span>
+              <span
+                onClick={() => {
+                  handleAddFav(movie);
+                }}
+              >
+                Yêu thích
+              </span>
               <span>Thêm vào</span>
               <span>Chia sẻ</span>
               <span>Bình luận</span>
@@ -167,13 +175,34 @@ const MovieDetail = () => {
               </div>
             )}
           </div>
-
-          {/* COMMENT SECTION */}
+          <Comment />
+          {/* COMMENT SECTION
           <div className="comment-section">
-            <h2>Bình luận</h2>
-            <textarea placeholder="Nhập bình luận của bạn..." />
-            <button>Gửi bình luận</button>
-          </div>
+            <div className="comment-input">
+              <h2>Bình luận</h2>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Nhập bình luận của bạn..."
+              />
+              <button onClick={handleComment()}>Gửi bình luận</button>
+            </div>
+            <div className="comment-list">
+              {comments.length === 0 ? (
+                <p>Chưa có bình luận nào.</p>
+              ) : (
+                comments.map((c) => (
+                  <div key={c.id} className="comment-item">
+                    <p className="comment-text">{c.text}</p>
+                    <small>{c.date}</small>
+                    <button onClick={() => handleDeleteComment(c.id)}>
+                      Xóa
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div> */}
         </div>
       </div>
     </div>

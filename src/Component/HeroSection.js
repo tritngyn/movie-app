@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import MovieDetail from "./MovieDetail";
+import "./HeroSection.css";
 import axios from "axios";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -14,7 +14,6 @@ import { Navigation, Pagination, Autoplay, Thumbs } from "swiper/modules";
 import { Link } from "react-router-dom";
 import { faL, faThumbsDown } from "@fortawesome/free-solid-svg-icons";
 const Hero = ({ categoryName }) => {
-  const [currentIndex, setCurrentIndex] = useState("");
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -152,17 +151,6 @@ const Hero = ({ categoryName }) => {
           </SwiperSlide>
         ))}
       </Swiper>
-      {selectedMovie && (
-        <div className="movie-popup">
-          <div className="movie-popup-overlay" onClick={handleCloseModal} />
-          <div className="movie-popup-content">
-            <button className="popup-close-btn" onClick={handleCloseModal}>
-              <ClearIcon />
-            </button>
-            <MovieDetail />
-          </div>
-        </div>
-      )}
     </>
   );
 };
