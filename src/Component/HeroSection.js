@@ -98,7 +98,7 @@ const Hero = ({ categoryName }) => {
               {movie && (
                 <>
                   {movie.tagline && (
-                    <p className="movie-tagline">"{movie.tagline}"</p>
+                    <p className="movie-tagline">{movie.tagline}</p>
                   )}
                   <div className="hero-stats">
                     <span className="hero-badge">

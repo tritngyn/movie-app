@@ -10,9 +10,7 @@ const SearchResults = ({ searchTerm, results }) => {
       <div className="container">
         {searchTerm && results.length > 0 && (
           <div className="movies-list">
-            <h2 className="category-title">
-              Search Results for "{searchTerm}"
-            </h2>
+            <h2 className="category-title">Search Results for {searchTerm}</h2>
             <div className="movies-grid">
               {results.map((movie) => (
                 <>

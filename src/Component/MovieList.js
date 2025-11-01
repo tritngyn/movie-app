@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import styles from "./MovieList.module.css";
-import "swiper/css";
-import "swiper/css/navigation";
 import { Link } from "react-router-dom";
-const MovieList = ({ categoryName, handleAddFav }) => {
+import "./MovieList.module.scss";
+import MovieCard from "./MovieCard";
+
+export default function MovieList({ categoryName }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const constructFetchUrl = () => {
     if (categoryName === "TV")
       return `${process.env.REACT_APP_BASE_URL}/discover/tv?api_key=${process.env.REACT_APP_API_KEY}`;
@@ -14,15 +15,12 @@ const MovieList = ({ categoryName, handleAddFav }) => {
       return `${process.env.REACT_APP_BASE_URL}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}`;
   };
 
-  // lấy địa chỉ URL từ hàm bên trên
-  const fetchUrl = constructFetchUrl();
-
   useEffect(() => {
     const fetchMovies = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(fetchUrl);
-        setMovies(response.data.results);
+        const response = await axios.get(constructFetchUrl());
+        setMovies(response.data.results || []);
       } catch (error) {
         console.error("Error fetching movies:", error);
       } finally {
@@ -30,39 +28,49 @@ const MovieList = ({ categoryName, handleAddFav }) => {
       }
     };
     fetchMovies();
-  }, [fetchUrl]);
+  }, [categoryName]);
+
   return (
-    <div className={styles["movie-list"]}>
-      <h2 className={styles["category-name"]}>{categoryName}</h2>
+    <section className="movie-section">
+      <div className="movie-section-header">
+        <h2 className="movie-section-title">{categoryName}</h2>
+        <Link
+          to={`/category/${categoryName.toLowerCase()}`}
+          className="view-all"
+        >
+          Xem toàn bộ →
+        </Link>
+      </div>
 
       {loading ? (
-        <p className={styles["loading-text"]}>Loading movies...</p>
+        <p className="loading-text">Đang tải phim...</p>
       ) : movies.length === 0 ? (
-        <p className={styles["no-movie"]}>No movies available</p>
+        <p className="no-movie">Không có phim nào</p>
       ) : (
-        <div className={styles["movies-grid"]}>
-          {movies.map((movie) => (
-            <div className={styles["movie-item"]} key={movie.id}>
+        <div className="movies-grid">
+          {movies.slice(0, 12).map((movie, index) => (
+            <div className="movie-card" key={movie.id}>
               <Link
                 to={`/${categoryName.toLowerCase()}/${movie.id}`}
-                className={styles["movie-card"]}
-                onClick={() => console.log("to page:", movie.id)}
+                className="movie-link"
+                style={{ textDecoration: "none", color: "inherit" }}
               >
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title || movie.name}
-                  className={styles["movie-poster"]}
+                <MovieCard
+                  image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  title={movie.title || movie.name}
+                  rating={movie.vote_average?.toFixed(1)}
+                  episode={
+                    categoryName === "TV" && movie.episode_count
+                      ? `Tập: ${movie.episode_count}`
+                      : null
+                  }
+                  quality="HD"
                 />
-                <h4 className={styles["movie-title"]}>
-                  {movie.title || movie.name}
-                </h4>
               </Link>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
-};
-
-export default MovieList;
+}

@@ -6,12 +6,14 @@ import User from "./Component/User";
 import axios from "axios";
 import NAV from "./NAV/NAV";
 import { ToastContainer, toast } from "react-toastify";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HeroSection from "./Component/HeroSection";
 import MList from "./Component/MList";
 import Footer from "./Component/Footer";
 import MovieDetail from "./Component/MovieDetail";
 import GenreList from "./Component/GenreList";
+import Auth from "./Component/Auth";
+import { supabase } from "./supabaseClient";
 
 function App() {
   const [searchterm, setSearchTerm] = useState("");
@@ -20,12 +22,24 @@ function App() {
   const [favmovie, setFavmovies] = useState([]);
   const [categoryName, setCategoryName] = useState("Popular");
   const [selectedGenre, setSelectedGenre] = useState("");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const savedFavHistory = localStorage.getItem("searchFavHistory");
-    if (savedFavHistory) {
-      setFavmovies(JSON.parse(savedFavHistory));
+    async function getUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
     }
+    getUser();
+
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => subscription.subscription.unsubscribe();
   }, []);
   const handleClickSearch = async (term) => {
     console.log("search movie:", term);
@@ -61,7 +75,7 @@ function App() {
   const DeleteFav = (movie) => {
     const newFav = favmovie.filter((item) => item !== movie);
     setFavmovies(newFav);
-    localStorage.setItem(`searchFavHistory`, JSON.stringify(newFav));
+    localStorage.setItem("searchFavHistory", JSON.stringify(newFav));
   };
   const handleSelectGenre = (genreID, genreName) => {
     setSelectedGenre(genreID);
@@ -71,10 +85,12 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <NAV
+          user={user}
           onSelectGenre={handleSelectGenre}
           handleClickSearch={handleClickSearch}
         />
         <Routes>
+          <Route path="/auth" element={<Auth />}></Route>
           <Route
             path="/"
             element={
@@ -128,21 +144,13 @@ function App() {
           {/* Danh mục thể loại */}
           <Route
             path="/the_loai/:genre"
-            element={
-              <GenreList
-                categoryName={categoryName}
-                handleAddFav={handleAddFav}
-              />
-            }
+            element={<GenreList categoryName={categoryName} />}
           />
           {/* Chi tiết phim */}
           <Route
             path="/:category/:id"
             element={<MovieDetail handleAddFav={handleAddFav} />}
           />
-
-          {/* Quốc gia (tùy chọn) */}
-          <Route path="/quoc_gia" element={<div>Hello</div>} />
         </Routes>
       </BrowserRouter>
       <Footer />

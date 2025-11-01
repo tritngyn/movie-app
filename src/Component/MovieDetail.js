@@ -3,11 +3,33 @@ import "./MovieDetail.scss";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Comment from "./Comment";
+import {
+  supabase,
+  toggleFavorite,
+  toggleWatchlist,
+  isInFavorites,
+  isInWatchlist,
+} from "../supabaseClient";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import ShareIcon from "@mui/icons-material/Share";
+import StarIcon from "@mui/icons-material/Star";
+import AddIcon from "@mui/icons-material/Add";
+import DoneIcon from "@mui/icons-material/Done";
 const MovieDetail = ({ handleAddFav }) => {
   const { id, category } = useParams();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("trailer");
+
+  const [cast, setCast] = useState([]);
+  const [crew, setCrew] = useState({});
+  const [videos, setVideos] = useState([]);
+
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isInList, setIsInList] = useState(false);
+
   console.log(id, category);
   // const [comment, setComment] = useState("");
   // const [comments, setComments] = useState([]);
@@ -31,6 +53,23 @@ const MovieDetail = ({ handleAddFav }) => {
   if (!movie) return <p>Không có dữ liệu phim.</p>;
 
   console.log("fetch:", category);
+  const handleToggleFavorite = async () => {
+    const result = await toggleFavorite(movie);
+    if (result.success) {
+      setIsFavorite(!isFavorite);
+    } else {
+      console.log(result.message, "error");
+    }
+  };
+
+  const handleToggleWatchlist = async () => {
+    const result = await toggleWatchlist(movie);
+    if (result.success) {
+      setIsInList(!isInList);
+    } else {
+      console.log(result.message, "error");
+    }
+  };
 
   return (
     <div className="movie-detail-page">
@@ -71,20 +110,46 @@ const MovieDetail = ({ handleAddFav }) => {
 
         {/* RIGHT SECTION */}
         <div className="right-section">
-          <div className="buttons">
-            <button className="watch">▶ Xem Ngay</button>
-            <div className="actions">
-              <span
-                onClick={() => {
-                  handleAddFav(movie);
-                }}
-              >
-                Yêu thích
-              </span>
-              <span>Thêm vào</span>
+          <div className="action-buttons-group">
+            <button className="btn-play" title="Phát">
+              <PlayArrowIcon className="icon" />
+            </button>
+
+            <button
+              onClick={handleToggleFavorite}
+              className={`btn-icon ${isFavorite ? "active" : ""}`}
+              title="Yêu thích"
+            >
+              {isFavorite ? (
+                <FavoriteIcon className="icon" />
+              ) : (
+                <FavoriteBorderIcon className="icon" />
+              )}
+              <span>Yêu Thích</span>
+            </button>
+
+            <button
+              onClick={handleToggleWatchlist}
+              className={`btn-icon ${isInList ? "active" : ""}`}
+              title="Thêm vào danh sách"
+            >
+              {isInList ? (
+                <DoneIcon className="icon" />
+              ) : (
+                <AddIcon className="icon" />
+              )}
+              <span>Thêm Vào</span>
+            </button>
+
+            <button className="btn-icon" title="Chia sẻ">
+              <ShareIcon className="icon" />
               <span>Chia sẻ</span>
-              <span>Bình luận</span>
-            </div>
+            </button>
+
+            <button className="btn-icon" title="Đánh giá">
+              <StarIcon className="icon" />
+              <span>Đánh giá</span>
+            </button>
           </div>
           {/* NAVIGATION TABS */}
           <div className="tab-nav">
@@ -122,6 +187,7 @@ const MovieDetail = ({ handleAddFav }) => {
                         ).key
                       }`}
                       title="Trailer"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />
                   ) : (
@@ -176,33 +242,6 @@ const MovieDetail = ({ handleAddFav }) => {
             )}
           </div>
           <Comment />
-          {/* COMMENT SECTION
-          <div className="comment-section">
-            <div className="comment-input">
-              <h2>Bình luận</h2>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Nhập bình luận của bạn..."
-              />
-              <button onClick={handleComment()}>Gửi bình luận</button>
-            </div>
-            <div className="comment-list">
-              {comments.length === 0 ? (
-                <p>Chưa có bình luận nào.</p>
-              ) : (
-                comments.map((c) => (
-                  <div key={c.id} className="comment-item">
-                    <p className="comment-text">{c.text}</p>
-                    <small>{c.date}</small>
-                    <button onClick={() => handleDeleteComment(c.id)}>
-                      Xóa
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div> */}
         </div>
       </div>
     </div>
