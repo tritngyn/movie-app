@@ -1,0 +1,68 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+.genre-section {
+  width: 100%;
+  max-width: 1400px; // hoặc 1200px tùy layout
+  margin: 0 auto;
+  padding: 40px 40px; // khoảng trống bên trong, không gây tràn
+  box-sizing: border-box;
+
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  background: #0e0e0e;
+  overflow-x: hidden; // ✅ Chặn tràn ngang
+
+  .genre-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+
+    .genre-title {
+      font-size: 30px;
+      font-weight: 600;
+      position: relative;
+      color: #fff;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #ff512f, #dd2476);
+        border-radius: 3px;
+      }
+    }
+  }
+
+  .loading-text,
+  .no-movie {
+    text-align: center;
+    color: #ccc;
+    font-size: 15px;
+    padding: 40px 0;
+  }
+
+  .genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+    overflow-x: hidden;
+  }
+
+  .genre-card {
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #1b1b1b;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 24px rgba(255, 82, 82, 0.35);
+    }
+  }
+}

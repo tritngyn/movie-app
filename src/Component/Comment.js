@@ -1,60 +1,113 @@
 import React, { useState } from "react";
-import "./Comment.scss"; // lát nữa mình tạo file này
+import "./Comment.scss";
+import hqh from "../assets/hqh.jfif";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+import CommentIcon from "@mui/icons-material/Comment";
+const mockComments = [
+  {
+    id: 1,
+    author: "Duyen Hong",
+    avatar: "",
+    isVIP: true,
+    likes: 0,
+    dislikes: 0,
+    time: "4 giờ trước",
+    comment: "love this one",
+  },
+];
 
-const CommentSection = () => {
+export default function CommentSection() {
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([]);
+  const [charCount, setCharCount] = useState(0);
+  const maxChars = 1000;
 
-  const handleAddComment = () => {
-    if (comment.trim() === "") return;
-
-    const newComment = {
-      id: Date.now(),
-      user: "Triet Nguyen",
-      text: comment,
-      time: new Date().toLocaleString(),
-    };
-
-    setComments([...comments, newComment]);
-    setComment("");
+  const handleCommentChange = (e) => {
+    const text = e.target.value;
+    if (text.length <= maxChars) {
+      setComment(text);
+      setCharCount(text.length);
+    }
   };
 
   return (
     <div className="comment-section">
-      <h2>Bình luận</h2>
-
-      {/* Ô nhập */}
-      <div className="comment-input">
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Nhập bình luận của bạn..."
-          maxLength={500}
-        />
-        <button onClick={handleAddComment}>Gửi</button>
+      {/* Comment Stats */}
+      <div className="comment-header">
+        <span className="icon">💬</span>
+        <h3>Bình luận (84)</h3>
+        <div className="button-group">
+          <button size="sm" className="btn-outline">
+            Bình luận
+          </button>
+          <button size="sm" className="btn-outline">
+            Đánh giá
+          </button>
+        </div>
       </div>
 
-      {/* Danh sách bình luận */}
+      {/* Comment Input */}
+      <div className="comment-input">
+        <p className="login-notice">
+          Vui lòng <span>đăng nhập</span> để tham gia bình luận.
+        </p>
+        <div className="input-wrapper">
+          <textarea
+            value={comment}
+            onChange={handleCommentChange}
+            placeholder="Viết bình luận"
+            className="input-textarea"
+          />
+          <div className="input-footer">
+            <div className="spoiler">
+              <input type="checkbox" id="spoiler" />
+              <label htmlFor="spoiler">Tiết lộ?</label>
+            </div>
+            <div className="submit-group">
+              <span className="char-count">
+                {charCount} / {maxChars}
+              </span>
+              <button className="btn-send">
+                Gửi <span>✈️</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Comments List */}
       <div className="comment-list">
-        {comments.length === 0 ? (
-          <p className="no-comment">Chưa có bình luận nào</p>
-        ) : (
-          comments.map((c) => (
-            <div key={c.id} className="comment-item">
-              <div className="avatar">{c.user[0]}</div>
-              <div className="content">
-                <div className="info">
-                  <span className="name">{c.user}</span>
-                  <span className="time">{c.time}</span>
+        {mockComments.map((comment) => (
+          <div key={comment.id} className="comment-card">
+            <div className="card-top">
+              <avatar className="avatar">
+                <img src={hqh} />
+              </avatar>
+              <div className="card-body">
+                <div className="card-header">
+                  <span className="author">{comment.author}</span>
+
+                  <span className="time">{comment.time}</span>
+                  <badge className="episode-badge">0.4 - Tập 3</badge>
                 </div>
-                <p>{c.text}</p>
+                <p className="content">{comment.comment}</p>
+                <div className="card-actions">
+                  <button className="btn-action">
+                    <ThumbsUp className="icon-sm" />
+                    <span>{comment.likes}</span>
+                  </button>
+                  <button className="btn-action">
+                    <ThumbsDown className="icon-sm" />
+                    <span>{comment.dislikes}</span>
+                  </button>
+                  <button className="btn-reply">
+                    <CommentIcon /> Trả lời
+                  </button>
+                </div>
               </div>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default CommentSection;
+}

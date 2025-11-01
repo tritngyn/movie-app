@@ -18,12 +18,17 @@ const Footer = () => {
                 <a
                   href="https://www.themoviedb.org/settings/api"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   API Database
                 </a>
               </li>
               <li>
-                <a href="https://www.rophim.mx/phimhay" target="_blank">
+                <a
+                  href="https://www.rophim.mx/phimhay"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Web mẫu
                 </a>
               </li>
@@ -49,7 +54,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="footer-bottom"> @tritngyn's side project</div>
+        <div className="footer-bottom"> tritngyn side project</div>
       </footer>
     </>
   );

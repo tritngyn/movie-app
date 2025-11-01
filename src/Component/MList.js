@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styles from "./MList.module.scss";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Navigation } from "swiper/modules";
+import MovieCard from "./MovieCard";
+import { ChevronRight } from "lucide-react";
 
-const MList = ({ categoryName, handleAddFav }) => {
+const MList = ({ categoryName }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
+  const swiperRef = useRef(null);
 
   const categoryMap = {
     Popular: { type: "category", value: "popular" },
@@ -37,11 +40,12 @@ const MList = ({ categoryName, handleAddFav }) => {
           return `${process.env.REACT_APP_BASE_URL}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}`;
       }
     };
+
     const fetchMovies = async () => {
       setLoading(true);
       try {
         const response = await axios.get(constructFetchUrl(categoryName));
-        setMovies(response.data.results);
+        setMovies(response.data.results || []);
       } catch (error) {
         console.error("Error fetching movies:", error);
       } finally {
@@ -52,9 +56,22 @@ const MList = ({ categoryName, handleAddFav }) => {
   }, [categoryName]);
 
   return (
-    <>
-      <div className={styles["movie-list"]}>
-        <h2 className={styles["category-name"]}>{categoryName}</h2>
+    <div className={styles.section}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h2 className={styles.title}>
+          {categoryName}
+          <span className={styles.viewAll}>Xem toàn bộ</span>
+          <ChevronRight className={styles.chevronIcon} />
+        </h2>
+
+        <div className={styles.controls}></div>
+      </div>
+
+      {/* Swiper Slider */}
+      {loading ? (
+        <p className={styles.loading}>Đang tải...</p>
+      ) : (
         <Swiper
           modules={[Navigation]}
           spaceBetween={24}
@@ -73,13 +90,13 @@ const MList = ({ categoryName, handleAddFav }) => {
             paddingBottom: "10px",
           }}
         >
-          {movies.map((movie) => (
+          {movies.map((movie, index) => (
             <SwiperSlide
               className={styles["movie-item"]}
               key={movie.id}
               style={{
                 flex: "0 0 auto",
-                width: "calc(100% / 6)", // chia đều 6 ô
+                width: "calc(100% / 5)", // chia đều 6 ô
                 maxWidth: "220px", // nhưng không vượt quá 220px
                 flexDirection: "column",
                 alignItems: "flex-start",
@@ -89,21 +106,26 @@ const MList = ({ categoryName, handleAddFav }) => {
               <Link
                 to={`/${categoryName === "TV" ? "tv" : "movie"}/${movie.id}`}
                 className={styles["movie-card"]}
+                style={{ textDecoration: "none", color: "inherit" }}
               >
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                  alt={movie.title || movie.name}
-                  className={styles["movie-poster"]}
+                <MovieCard
+                  image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  title={movie.title || movie.name}
+                  rating={movie.vote_average?.toFixed(1)}
+                  episode={
+                    categoryName === "TV" && movie.episode_count
+                      ? `Tập: ${movie.episode_count}`
+                      : null
+                  }
+                  quality="HD"
+                  rank={index + 1}
                 />
-                <h4 className={styles["movie-title"]}>
-                  {movie.title || movie.name}
-                </h4>
               </Link>
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
-    </>
+      )}
+    </div>
   );
 };
 
