@@ -1,25 +1,23 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import "./MovieList.module.scss";
+import styles from "./MovieList.module.scss";
 import MovieCard from "./MovieCard";
+import FilterBar from "./FilterBar";
 
 export default function MovieList({ categoryName }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const constructFetchUrl = () => {
-    if (categoryName === "TV")
-      return `${process.env.REACT_APP_BASE_URL}/discover/tv?api_key=${process.env.REACT_APP_API_KEY}`;
-    if (categoryName === "Movie")
-      return `${process.env.REACT_APP_BASE_URL}/discover/movie?api_key=${process.env.REACT_APP_API_KEY}`;
-  };
-
+  // Fetch movies từ TMDB
   useEffect(() => {
     const fetchMovies = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(constructFetchUrl());
+        const type = categoryName === "TV" ? "tv" : "movie";
+        const response = await axios.get(
+          `${process.env.REACT_APP_BASE_URL}/discover/${type}?api_key=${process.env.REACT_APP_API_KEY}&language=vi`
+        );
         setMovies(response.data.results || []);
       } catch (error) {
         console.error("Error fetching movies:", error);
@@ -31,28 +29,31 @@ export default function MovieList({ categoryName }) {
   }, [categoryName]);
 
   return (
-    <section className="movie-section">
-      <div className="movie-section-header">
-        <h2 className="movie-section-title">{categoryName}</h2>
+    <section className={styles["movie-section"]}>
+      <div className={styles["movie-section-header"]}>
+        <h2 className={styles["movie-section-title"]}>{categoryName}</h2>
         <Link
           to={`/category/${categoryName.toLowerCase()}`}
-          className="view-all"
+          className={styles["view-all"]}
         >
-          Xem toàn bộ →
+          Xem tất cả →
         </Link>
       </div>
 
+      {/* FilterBar Component - Khi submit sẽ chuyển sang trang FilterResults */}
+      <FilterBar categoryName={categoryName} />
+
       {loading ? (
-        <p className="loading-text">Đang tải phim...</p>
+        <p className={styles["loading-text"]}>Đang tải phim...</p>
       ) : movies.length === 0 ? (
-        <p className="no-movie">Không có phim nào</p>
+        <p className={styles["no-movie"]}>Không có phim nào</p>
       ) : (
-        <div className="movies-grid">
-          {movies.slice(0, 12).map((movie, index) => (
-            <div className="movie-card" key={movie.id}>
+        <div className={styles["movies-grid"]}>
+          {movies.slice(0, 20).map((movie) => (
+            <div className={styles["movie-card"]} key={movie.id}>
               <Link
                 to={`/${categoryName.toLowerCase()}/${movie.id}`}
-                className="movie-link"
+                className={styles["movie-link"]}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <MovieCard
@@ -60,8 +61,8 @@ export default function MovieList({ categoryName }) {
                   title={movie.title || movie.name}
                   rating={movie.vote_average?.toFixed(1)}
                   episode={
-                    categoryName === "TV" && movie.episode_count
-                      ? `Tập: ${movie.episode_count}`
+                    categoryName === "TV" && movie.number_of_episodes
+                      ? `Tập: ${movie.number_of_episodes}`
                       : null
                   }
                   quality="HD"

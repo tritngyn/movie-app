@@ -14,6 +14,7 @@ import MovieDetail from "./Component/MovieDetail";
 import GenreList from "./Component/GenreList";
 import Auth from "./Component/Auth";
 import { supabase } from "./supabaseClient";
+import FilterResults from "./Component/FilterResults";
 
 function App() {
   const [searchterm, setSearchTerm] = useState("");
@@ -134,7 +135,6 @@ function App() {
               <MovieList categoryName={"Movie"} handleAddFav={handleAddFav} />
             }
           />
-
           <Route
             path="/phim_bo"
             element={
@@ -151,6 +151,7 @@ function App() {
             path="/:category/:id"
             element={<MovieDetail handleAddFav={handleAddFav} />}
           />
+          <Route path="/filter-results" element={<FilterResults />} />
         </Routes>
       </BrowserRouter>
       <Footer />

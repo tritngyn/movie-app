@@ -33,18 +33,6 @@ const Hero = ({ categoryName }) => {
       .catch((err) => console.error(err));
   }, []);
 
-  // // Auto slide
-  // useEffect(() => {
-  //   if (movies.length > 0) {
-  //     const interval = setInterval(() => {
-  //       setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
-  //     }, 5000); // đổi ảnh mỗi 5 giây
-
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [movies]);
-
-  // tìm phim, chỉ được gọi khi click tìm kiếm
   const handleSelectedClick = async (movieId) => {
     try {
       const response = await axios.get(
@@ -138,7 +126,8 @@ const Hero = ({ categoryName }) => {
         freeMode
         loop={true}
         watchSlidesProgress={true}
-        slideToClickedSlide={true} // <-- cho click đổi slide chính
+        sl
+        ClickedSlide={true} // <-- cho click đổi slide chính
         autoplay={{ delay: 3000, disableOnInteraction: false }} // <-- auto-scroll thumbs
         className="hero-thumbs"
       >
