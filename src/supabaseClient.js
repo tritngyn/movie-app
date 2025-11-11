@@ -27,7 +27,7 @@ export const addToFavorites = async (movie) => {
       .select("id")
       .eq("user_id", user.id)
       .eq("movie_id", movie.id)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       return {
@@ -37,22 +37,30 @@ export const addToFavorites = async (movie) => {
     }
 
     // Thêm phim vào favorites
+    // Thêm phim vào favorites (ngăn trùng)
     const { data, error } = await supabase
       .from("favorites")
       .insert([
         {
           user_id: user.id,
           movie_id: movie.id,
-          title: movie.title,
-          name: movie.name,
-          poster_path: movie.poster_path,
-          vote_average: movie.vote_average,
-          release_date: movie.release_date,
+          movie_title: movie.title || movie.name,
+          poster: movie.poster_path,
         },
       ])
-      .select();
+      .select()
+      .single();
 
-    if (error) throw error;
+    if (error) {
+      // Nếu lỗi do constraint UNIQUE thì bỏ qua
+      if (error.message?.includes("duplicate key value")) {
+        return {
+          success: false,
+          message: "Phim đã có trong danh sách yêu thích",
+        };
+      }
+      throw error;
+    }
 
     return { success: true, message: "Đã thêm vào yêu thích", data };
   } catch (error) {
@@ -108,11 +116,11 @@ export const addToWatchlist = async (movie) => {
 
     // Kiểm tra xem phim đã có trong watchlist chưa
     const { data: existing } = await supabase
-      .from("watchlist")
+      .from("favorites")
       .select("id")
       .eq("user_id", user.id)
       .eq("movie_id", movie.id)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       return { success: false, message: "Phim đã có trong danh sách" };
@@ -191,7 +199,7 @@ export const isInFavorites = async (movieId) => {
       .select("id")
       .eq("user_id", user.id)
       .eq("movie_id", movieId)
-      .single();
+      .maybeSingle();
 
     return !!data;
   } catch (error) {
@@ -213,11 +221,11 @@ export const isInWatchlist = async (movieId) => {
     if (!user) return false;
 
     const { data } = await supabase
-      .from("watchlist")
+      .from("favorites")
       .select("id")
       .eq("user_id", user.id)
       .eq("movie_id", movieId)
-      .single();
+      .maybeSingle();
 
     return !!data;
   } catch (error) {

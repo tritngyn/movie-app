@@ -1,0 +1,33 @@
+.watchlist-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-top: 30px;
+
+  select {
+    flex: 1;
+    background: #1c1c1c;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 15px;
+    outline: none;
+  }
+
+  button {
+    background: #e50914;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 10px;
+    transition: 0.2s ease;
+  }
+
+  button:hover {
+    background: #b0060f;
+  }
+}

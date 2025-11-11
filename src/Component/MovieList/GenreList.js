@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import MovieCard from "./MovieCard";
 import "./GenreList.scss";
+import FilterBar from "../FilterBar";
 
 export default function GenreList({ categoryName }) {
   const [movies, setMovies] = useState([]);
@@ -34,6 +35,8 @@ export default function GenreList({ categoryName }) {
       <div className="genre-header">
         <h2 className="genre-title">{categoryName}</h2>
       </div>
+      {/* FilterBar Component - Khi submit sẽ chuyển sang trang FilterResults */}
+      <FilterBar categoryName={categoryName} />
 
       {loading ? (
         <p className="loading-text">Đang tải phim...</p>
@@ -41,7 +44,7 @@ export default function GenreList({ categoryName }) {
         <p className="no-movie">Không có phim nào</p>
       ) : (
         <div className="genre-grid">
-          {movies.slice(0, 20).map((movie, index) => (
+          {movies.slice(0, 20).map((movie) => (
             <Link
               key={movie.id}
               to={`/movie/${movie.id}`}

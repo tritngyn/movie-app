@@ -61,7 +61,6 @@ const MList = ({ categoryName }) => {
       <div className={styles.header}>
         <h2 className={styles.title}>
           {categoryName}
-          <span className={styles.viewAll}>Xem toàn bộ</span>
           <ChevronRight className={styles.chevronIcon} />
         </h2>
 
@@ -78,7 +77,7 @@ const MList = ({ categoryName }) => {
           slidesPerView="auto"
           grabCursor={true}
           navigation
-          loop={true}
+          loop={false}
           breakpoints={{
             320: { slidesPerView: 2 },
             640: { slidesPerView: 3 },

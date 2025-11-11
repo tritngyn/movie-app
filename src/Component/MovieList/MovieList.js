@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "./MovieList.module.scss";
 import MovieCard from "./MovieCard";
-import FilterBar from "./FilterBar";
+import FilterBar from "../FilterBar";
 
 export default function MovieList({ categoryName }) {
   const [movies, setMovies] = useState([]);
@@ -32,12 +32,6 @@ export default function MovieList({ categoryName }) {
     <section className={styles["movie-section"]}>
       <div className={styles["movie-section-header"]}>
         <h2 className={styles["movie-section-title"]}>{categoryName}</h2>
-        <Link
-          to={`/category/${categoryName.toLowerCase()}`}
-          className={styles["view-all"]}
-        >
-          Xem tất cả →
-        </Link>
       </div>
 
       {/* FilterBar Component - Khi submit sẽ chuyển sang trang FilterResults */}

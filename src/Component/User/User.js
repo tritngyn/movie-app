@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import "./User.scss";
-
-// Khởi tạo Supabase client
-const supabaseUrl = "https://cdiayaofvcjovgcbhupo.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkaWF5YW9mdmNqb3ZnY2JodXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzOTE2MjIsImV4cCI6MjA3NTk2NzYyMn0.ebnl4d_ZcVk_mpRas68030yhVrEVeBaFbTwrQk7J6mA";
-const supabase = createClient(supabaseUrl, supabaseKey);
-
+import hqh from "../../assets/hqh.jfif";
+import {
+  supabase,
+  removeFromWatchlist,
+  removeFromFavorites,
+} from "../../supabaseClient";
+import WatchlistDropdown from "./WatchList";
 // TMDB API
 const TMDB_API_KEY = "b13aa17feb96ef0ae039e6c0531f586a";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -27,6 +26,9 @@ const User = () => {
   });
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+
+  const [watchlists, setWatchlists] = useState([]);
+  const [selectedList, setSelectedList] = useState(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -56,6 +58,52 @@ const User = () => {
       return null;
     }
   };
+  //WatchList
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchWatchlists = async () => {
+      const { data, error } = await supabase
+        .from("watchlists")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+      if (!error) setWatchlists(data);
+    };
+
+    fetchWatchlists();
+  }, [user]);
+  //fetch phim trong list được chọn
+  useEffect(() => {
+    if (!selectedList) return;
+
+    const fetchMovies = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("watchlist_movies")
+        .select("*")
+        .eq("watchlist_id", selectedList.id)
+        .order("added_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+
+      const detailed = await Promise.all(
+        data.map(async (item) => {
+          const detail = await fetchMovieDetails(item.movie_id);
+          return { ...item, ...detail };
+        })
+      );
+
+      setMovies(detailed);
+      setLoading(false);
+    };
+
+    fetchMovies();
+  }, [selectedList]);
 
   useEffect(() => {
     if (!user || activeTab === "account") return;
@@ -91,23 +139,27 @@ const User = () => {
     fetchMovies();
   }, [activeTab, user]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (movieId) => {
     try {
-      const { error } = await supabase
-        .from(activeTab === "favorites" ? "favorites" : "watchlist")
-        .delete()
-        .eq("id", id)
-        .eq("user_id", user.id);
+      if (activeTab === "favorites") {
+        // Nếu tab hiện tại là favorites -> xóa trực tiếp từ bảng favorites
+        const result = await removeFromFavorites(movieId);
+        if (!result.success) throw new Error(result.message);
+      } else {
+        // Nếu là watchlist -> dùng helper removeFromWatchlist
+        const result = await removeFromWatchlist(movieId);
+        if (!result.success) throw new Error(result.message);
+      }
 
-      if (error) throw error;
+      // Cập nhật lại state UI
+      setMovies((prev) => prev.filter((m) => m.id !== movieId));
 
-      setMovies(movies.filter((movie) => movie.id !== id));
+      alert("Đã xóa phim khỏi danh sách");
     } catch (error) {
       console.error("Error deleting movie:", error);
-      alert("Không thể xóa phim");
+      alert("Không thể xóa phim: " + error.message);
     }
   };
-
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setPasswordError("");
@@ -170,7 +222,9 @@ const User = () => {
     <div className="user-page">
       <aside className="sidebar">
         <div className="user-info">
-          <div className="avatar">{user?.email?.[0].toUpperCase()}</div>
+          <div className="avatar">
+            <img src={hqh} />
+          </div>
           <div className="user-details">
             <p className="greeting">Xin chào</p>
             <p className="username">{user?.email?.split("@")[0]}</p>
@@ -311,6 +365,15 @@ const User = () => {
               )}
             </div>
           </div>
+        )}
+        {activeTab === "watchlist" && (
+          <WatchlistDropdown
+            user={user}
+            watchlists={watchlists}
+            setWatchlists={setWatchlists}
+            selectedList={selectedList}
+            setSelectedList={setSelectedList}
+          />
         )}
 
         {activeTab !== "account" && (

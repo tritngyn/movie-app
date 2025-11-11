@@ -60,7 +60,6 @@ export default function FilterBar({ categoryName }) {
     { value: "latest", label: "Mới nhất" },
     { value: "oldest", label: "Mới cập nhật" },
     { value: "imdb", label: "Điểm IMDb" },
-    { value: "views", label: "Lượt xem" },
   ];
 
   // Fetch thể loại từ TMDB API
@@ -223,24 +222,6 @@ export default function FilterBar({ categoryName }) {
             </div>
           </div>
 
-          {/* Phiên bản */}
-          <div className={styles["filter-row"]}>
-            <label className={styles["filter-label"]}>Phiên bản:</label>
-            <div className={styles["filter-options"]}>
-              <button className={`${styles["filter-btn"]} ${styles["active"]}`}>
-                Tất cả
-              </button>
-              <button className={styles["filter-btn"]}>Phụ đề</button>
-              <button className={styles["filter-btn"]}>Lồng tiếng</button>
-              <button className={styles["filter-btn"]}>
-                Thuyết minh giọng Bắc
-              </button>
-              <button className={styles["filter-btn"]}>
-                Thuyết minh giọng Nam
-              </button>
-            </div>
-          </div>
-
           {/* Năm sản xuất */}
           <div className={styles["filter-row"]}>
             <label className={styles["filter-label"]}>Năm sản xuất:</label>
@@ -256,16 +237,6 @@ export default function FilterBar({ categoryName }) {
                   {year.label}
                 </button>
               ))}
-              <input
-                type="text"
-                placeholder="Nhập năm"
-                className={styles["year-input"]}
-                onBlur={(e) => {
-                  if (e.target.value) {
-                    handleFilterChange("year", e.target.value);
-                  }
-                }}
-              />
             </div>
           </div>
 
