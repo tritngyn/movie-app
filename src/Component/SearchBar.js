@@ -1,49 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./SearchBar.css";
 import { useNavigate } from "react-router-dom";
 
 function SearchBar({ OnSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchTerm) {
-        OnSearch(searchTerm);
-      }
-    }, 500); // chờ 500ms
-
-    return () => clearTimeout(timer); // cleanup
-  }, [searchTerm]);
-
   const navigate = useNavigate();
-  const handleInputChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (searchTerm.trim() === "") return;
     OnSearch(searchTerm);
-    console.log("-> send movie title", searchTerm);
-
-    if (searchTerm.trim() !== "") {
-      // đẩy từ khóa vào URL
-      navigate(`/searchresult?q=${encodeURIComponent(searchTerm)}`);
-    }
+    navigate(`/searchresult?q=${encodeURIComponent(searchTerm)}`); // ✅ chỉ gọi 1 lần
   };
+
   return (
-    <>
-      <form className="search_bar" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={searchTerm}
-          placeholder="Tìm kiếm phim, diễn viên"
-          onChange={handleInputChange}
-          className="search-input"
-        />
-        <button type="submit" className="search-button">
-          Tìm
-        </button>
-      </form>
-    </>
+    <form className="search_bar" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={searchTerm}
+        placeholder="Tìm kiếm phim, diễn viên"
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-input"
+      />
+      <button type="submit" className="search-button">
+        Tìm
+      </button>
+    </form>
   );
 }
+
 export default SearchBar;

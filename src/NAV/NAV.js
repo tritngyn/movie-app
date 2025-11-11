@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -12,6 +12,7 @@ import "../assets/hqh.jfif";
 import { supabase } from "../supabaseClient";
 library.add(faBars);
 import { useNavigate } from "react-router-dom";
+import useClickOutside from "../Component/hooks/useClickoutside";
 
 const NAV = ({ onSelectGenre, handleClickSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +22,9 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
   const [user, setUser] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+  // 🔸 Ref cho dropdown và popup
+  const menuRef = useRef(null);
+  const accountRef = useRef(null);
 
   const genres = [
     { id: 28, name: "Action" },
@@ -33,6 +37,11 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
     { id: 10749, name: "Romance" },
     { id: 10752, name: "War" },
   ];
+
+  // Dùng hook click outside
+  useClickOutside(menuRef, () => setIsMenuOpen(false));
+  useClickOutside(accountRef, () => setShowPopup(false));
+
   const toggleSearchBar = () => {
     setIsSBOpen(!isSearchBarOpen);
   };
@@ -80,7 +89,7 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
       <div className="nav-inner">
         {!isSearchBarOpen && (
           <>
-            <div className="nav-left">
+            <div className="nav-left" ref={menuRef}>
               <div className="navbarlinks">
                 <button className="hamburger" onClick={toggleMenu}>
                   <FontAwesomeIcon icon="fa-solid fa-bars" />
@@ -109,7 +118,7 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
           </>
         )}
 
-        <div className="nav-right">
+        <div className="nav-right" ref={accountRef}>
           <button className="search-btn">
             <SearchIcon className="searchicon" onClick={toggleSearchBar} />
           </button>

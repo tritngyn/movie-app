@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import MovieList from "./Component/MovieList";
+import MovieList from "./Component/MovieList/MovieList";
 import SearchResults from "./Component/SearchResults";
-import User from "./Component/User";
+import User from "./Component/User/User";
 import axios from "axios";
 import NAV from "./NAV/NAV";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HeroSection from "./Component/HeroSection";
-import MList from "./Component/MList";
+import MList from "./Component/MovieList/MList";
 import Footer from "./Component/Footer";
-import MovieDetail from "./Component/MovieDetail";
-import GenreList from "./Component/GenreList";
-import Auth from "./Component/Auth";
+import MovieDetail from "./Component/MovieList/MovieDetail";
+import GenreList from "./Component/MovieList/GenreList";
+import Auth from "./Component/User/Auth";
 import { supabase } from "./supabaseClient";
 import FilterResults from "./Component/FilterResults";
 
@@ -62,17 +62,6 @@ function App() {
     }
   };
 
-  //hàm cập nhập Favorite Movie
-  const handleAddFav = (movie) => {
-    toast("Add success!", movie.title);
-    const updatedFavHistory = [
-      movie,
-      ...favmovie.filter((item) => item.id !== movie.id),
-    ].slice(0, 10);
-    setFavmovies(updatedFavHistory);
-    localStorage.setItem("searchFavHistory", JSON.stringify(updatedFavHistory));
-    console.log("add movie:", movie.title || movie.name);
-  };
   const DeleteFav = (movie) => {
     const newFav = favmovie.filter((item) => item !== movie);
     setFavmovies(newFav);
@@ -97,24 +86,26 @@ function App() {
             element={
               <>
                 <HeroSection categoryName={"Movie"} />
-                <MList categoryName={"Horror"} handleAddFav={handleAddFav} />
-                <MList categoryName={"Action"} handleAddFav={handleAddFav} />
-                <MList categoryName={"Comedy"} hasndleAddFav={handleAddFav} />
-                <MList categoryName={"TV"} handleAddFav={handleAddFav} />
-                <MList categoryName={"Movie"} handleAddFav={handleAddFav} />
+                <div
+                  className="movie-section"
+                  style={{
+                    padding: "20px",
+                    borderTop: "1px solid #222",
+                    borderBottom: "1px solid #222",
+                    borderRadius: "12px",
+                  }}
+                >
+                  <MList categoryName={"Horror"} />
+                  <MList categoryName={"Action"} />
+                  <MList categoryName={"Comedy"} />
+                  <MList categoryName={"TV"} />
+                  <MList categoryName={"Movie"} />
+                </div>
               </>
             }
           />
-          <Route
-            path="/searchresult"
-            element={
-              <SearchResults
-                results={searchresults}
-                searchTerm={searchterm}
-                handleAddFav={handleAddFav}
-              />
-            }
-          />
+          <Route path="/searchresult" element={<SearchResults />} />
+
           <Route
             path="/user"
             element={
@@ -131,26 +122,16 @@ function App() {
           />
           <Route
             path="/phim_le"
-            element={
-              <MovieList categoryName={"Movie"} handleAddFav={handleAddFav} />
-            }
+            element={<MovieList categoryName={"Movie"} />}
           />
-          <Route
-            path="/phim_bo"
-            element={
-              <MovieList categoryName={"TV"} handleAddFav={handleAddFav} />
-            }
-          />
+          <Route path="/phim_bo" element={<MovieList categoryName={"TV"} />} />
           {/* Danh mục thể loại */}
           <Route
             path="/the_loai/:genre"
             element={<GenreList categoryName={categoryName} />}
           />
           {/* Chi tiết phim */}
-          <Route
-            path="/:category/:id"
-            element={<MovieDetail handleAddFav={handleAddFav} />}
-          />
+          <Route path="/:category/:id" element={<MovieDetail />} />
           <Route path="/filter-results" element={<FilterResults />} />
         </Routes>
       </BrowserRouter>

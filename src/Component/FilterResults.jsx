@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 import styles from "./FilterResults.module.scss";
-import MovieCard from "./MovieCard";
+import MovieCard from "../Component/MovieList/MovieCard";
 
 export default function FilterResults() {
   const [searchParams] = useSearchParams();

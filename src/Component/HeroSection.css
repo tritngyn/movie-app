@@ -3,6 +3,7 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
+  pointer-events: none; /* 👈 Cho phép click xuyên qua */
   background: linear-gradient(
     to right,
     rgba(0, 0, 0, 0.8) 30%,
@@ -20,6 +21,7 @@
 
 /* Nội dung Hero */
 .hero-content {
+  pointer-events: auto;
   position: absolute;
   bottom: 5%;
   left: 5%;
