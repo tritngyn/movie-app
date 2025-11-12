@@ -8,7 +8,6 @@ import "toastify-js/src/toastify.css";
 import { addComment, getCommentsByMovie, supabase } from "../supabaseClient";
 
 const Comment = ({ movieId }) => {
-  const maxChars = 1000;
   const [user, setUser] = useState(null);
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
@@ -43,7 +42,7 @@ const Comment = ({ movieId }) => {
     setLoading(true);
     const result = await addComment(movieId, content);
     setLoading(false);
-
+    console.log(loading);
     if (result.success) {
       setComments((prev) => [result.data, ...prev]);
       setContent("");
