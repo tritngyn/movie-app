@@ -45,7 +45,7 @@ const WatchlistDropdown = ({
         ))}
       </select>
 
-      <button onClick={handleCreate}>➕</button>
+      <button onClick={handleCreate}>+</button>
     </div>
   );
 };
