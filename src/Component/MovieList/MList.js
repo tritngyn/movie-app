@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./MList.module.scss";
 import { Link } from "react-router-dom";
@@ -12,7 +12,6 @@ import { ChevronRight } from "lucide-react";
 const MList = ({ categoryName }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const swiperRef = useRef(null);
 
   const categoryMap = {
     Popular: { type: "category", value: "popular" },

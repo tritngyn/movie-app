@@ -1,4 +1,7 @@
 module.exports = {
+  globals: {
+    process: "readonly",
+  },
   env: {
     browser: true,
     es2021: true,
