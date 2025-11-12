@@ -1,166 +1,66 @@
-// Auth.scss
-// --------------------
+// ==========================================
 // Variables
-// --------------------
-$bg: #0f1724;
-$card: #151c2b;
-$text: #e5edf5;
-$muted: #9aa6b2;
-$accent: #4f46e5;
-$error: #ff6b6b;
-$success: #22c55e;
-$radius: 10px;
-$transition: 200ms ease;
-$font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-  Arial;
+// ==========================================
+$color-bg-primary: #0f172a;
+$color-bg-secondary: #1e293b;
+$color-bg-tertiary: #334155;
+$color-card: rgba(30, 41, 59, 0.5);
+$color-border: rgba(71, 85, 105, 0.5);
+$color-text-primary: #ffffff;
+$color-text-secondary: #94a3b8;
+$color-text-muted: #64748b;
+$color-accent: #8b5cf6;
+$color-accent-hover: #a78bfa;
+$color-error: #ef4444;
+$color-error-bg: rgba(239, 68, 68, 0.1);
+$color-error-border: rgba(239, 68, 68, 0.5);
+$color-success: #22c55e;
+$color-success-bg: rgba(34, 197, 94, 0.1);
+$color-success-border: rgba(34, 197, 94, 0.5);
+$gradient-primary: linear-gradient(to right, #8b5cf6, #6366f1);
+$gradient-card: linear-gradient(
+  135deg,
+  rgba(139, 92, 246, 0.1),
+  rgba(99, 102, 241, 0.05)
+);
 
-// --------------------
-// Layout
-// --------------------
-.auth-form {
-  min-height: 100vh;
-  background: $bg;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: $font;
-  color: $text;
+$radius-sm: 0.5rem;
+$radius-md: 0.75rem;
+$radius-lg: 1rem;
+$radius-xl: 1.5rem;
 
-  .card {
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.03),
-        rgba(0, 0, 0, 0.03)
-      ),
-      $card;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: $radius;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-    padding: 2rem;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    animation: fadeIn 0.6s ease;
+$transition-fast: 200ms ease;
+$transition-normal: 300ms ease;
 
-    .title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: white;
-    }
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
+$shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.3);
+$shadow-accent: 0 10px 25px rgba(139, 92, 246, 0.3);
 
-    .subtitle {
-      font-size: 0.95rem;
-      color: $muted;
-      margin-bottom: 1.5rem;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-
-        label {
-          font-size: 0.9rem;
-          margin-bottom: 0.3rem;
-          color: $muted;
-        }
-
-        input {
-          width: 100%;
-          padding: 10px 14px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: $text;
-          border-radius: 8px;
-          font-size: 0.95rem;
-          transition: all $transition;
-
-          &:focus {
-            outline: none;
-            border-color: $accent;
-            box-shadow: 0 0 0 2px rgba($accent, 0.2);
-          }
-        }
-      }
-
-      button {
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
-        background: linear-gradient(90deg, $accent, lighten($accent, 10%));
-        color: white;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform $transition, box-shadow $transition;
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .loader {
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          border: 3px solid rgba(255, 255, 255, 0.4);
-          border-top-color: white;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-      }
-    }
-
-    .msg {
-      margin-top: 0.8rem;
-      font-size: 0.9rem;
-      &.error {
-        color: $error;
-      }
-      &.success {
-        color: $success;
-      }
-    }
-
-    .auth-toggle {
-      margin-top: 1.2rem;
-      font-size: 0.9rem;
-      color: $muted;
-
-      .toggle-link {
-        color: $accent;
-        cursor: pointer;
-        margin-left: 4px;
-        font-weight: 600;
-        text-decoration: underline;
-
-        &:hover {
-          color: lighten($accent, 10%);
-        }
-      }
-    }
+// ==========================================
+// Animations
+// ==========================================
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, -50px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  75% {
+    transform: translate(50px, 50px) scale(1.05);
   }
 }
 
-// --------------------
-// Animations
-// --------------------
-@keyframes fadeIn {
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -174,12 +74,456 @@ $font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
   }
 }
 
-// --------------------
-// Responsive
-// --------------------
-@media (max-width: 480px) {
-  .auth-form .card {
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// ==========================================
+// Main Container
+// ==========================================
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    $color-bg-primary 0%,
+    #581c87 50%,
+    $color-bg-primary 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem;
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+// ==========================================
+// Background Decoration
+// ==========================================
+.background-decoration {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+
+  .blob {
+    position: absolute;
+    width: 20rem;
+    height: 20rem;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.2;
+    animation: blob 20s ease-in-out infinite;
+    mix-blend-mode: multiply;
+
+    &.blob-1 {
+      background: #8b5cf6;
+      top: -10rem;
+      right: -10rem;
+      animation-delay: 0s;
+    }
+
+    &.blob-2 {
+      background: #6366f1;
+      bottom: -10rem;
+      left: -10rem;
+      animation-delay: 2s;
+    }
+
+    &.blob-3 {
+      background: #ec4899;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: 4s;
+    }
+  }
+}
+
+// ==========================================
+// Auth Card
+// ==========================================
+.auth-card {
+  width: 100%;
+  max-width: 28rem;
+  background: $color-card;
+  backdrop-filter: blur(20px);
+  border: 1px solid $color-border;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-xl;
+  padding: 2rem;
+  position: relative;
+  animation: fadeInUp 0.6s ease;
+  transition: all $transition-normal;
+
+  &:hover {
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+  }
+}
+
+// ==========================================
+// Header
+// ==========================================
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  .icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    background: $gradient-primary;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    box-shadow: $shadow-accent;
+
+    .icon {
+      width: 2rem;
+      height: 2rem;
+      color: $color-text-primary;
+    }
+  }
+
+  .title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $color-text-primary;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.025em;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+    color: $color-text-secondary;
+    line-height: 1.5;
+  }
+}
+
+// ==========================================
+// Form
+// ==========================================
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-text-secondary;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-icon {
+    position: absolute;
+    left: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: $color-text-muted;
+    pointer-events: none;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    color: $color-text-primary;
+    font-size: 0.9375rem;
+    transition: all $transition-fast;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $color-accent;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    &.password-input {
+      padding-right: 3rem;
+    }
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    cursor: pointer;
+    color: $color-text-muted;
+    transition: color $transition-fast;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: $color-text-secondary;
+    }
+
+    .toggle-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+// ==========================================
+// Forgot Password
+// ==========================================
+.forgot-password {
+  text-align: right;
+  margin-top: -0.5rem;
+
+  .forgot-link {
+    background: none;
+    border: none;
+    color: $color-accent;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: color $transition-fast;
+    padding: 0;
+
+    &:hover {
+      color: $color-accent-hover;
+    }
+  }
+}
+
+// ==========================================
+// Messages
+// ==========================================
+.message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  animation: fadeInUp 0.3s ease;
+
+  .message-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .message-text {
+    margin: 0;
+  }
+
+  &.error-message {
+    background: $color-error-bg;
+    border: 1px solid $color-error-border;
+    color: $color-error;
+  }
+
+  &.success-message {
+    background: $color-success-bg;
+    border: 1px solid $color-success-border;
+    color: $color-success;
+  }
+}
+
+// ==========================================
+// Submit Button
+// ==========================================
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: $gradient-primary;
+  color: $color-text-primary;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  box-shadow: $shadow-lg;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: $shadow-accent;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .loading-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    .spinner {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+// ==========================================
+// Toggle Mode
+// ==========================================
+.auth-toggle {
+  margin-top: 1.5rem;
+  text-align: center;
+
+  .toggle-text {
+    font-size: 0.875rem;
+    color: $color-text-secondary;
+    margin: 0;
+  }
+
+  .toggle-button {
+    background: none;
+    border: none;
+    color: $color-accent;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    padding: 0;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $color-accent-hover;
+    }
+  }
+}
+
+// ==========================================
+// Divider
+// ==========================================
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  gap: 0.75rem;
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: $color-border;
+  }
+
+  .divider-text {
+    font-size: 0.875rem;
+    color: $color-text-muted;
+    white-space: nowrap;
+  }
+}
+
+// ==========================================
+// Social Login
+// ==========================================
+.social-login {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+
+  .social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    .social-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    &:hover {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: $color-text-muted;
+    }
+  }
+}
+
+// ==========================================
+// Responsive Design
+// ==========================================
+@media (max-width: 640px) {
+  .auth-card {
     padding: 1.5rem;
-    border-radius: 12px;
+  }
+
+  .auth-header {
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .icon-wrapper {
+      width: 3.5rem;
+      height: 3.5rem;
+
+      .icon {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  }
+
+  .social-login {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding-top: 20px;
+    padding: 0.5rem;
+  }
+
+  .auth-card {
+    padding: 1.25rem;
+    border-radius: $radius-lg;
+  }
+
+  .form-input {
+    font-size: 16px; // Prevents zoom on iOS
   }
 }
