@@ -8,7 +8,7 @@ import {
   removeFromFavorites,
 } from "../../supabaseClient";
 import WatchlistDropdown from "./WatchList";
-import StarIcon from "@mui/icons-material/Star";
+
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -20,7 +20,7 @@ const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
 const User = () => {
   const [activeTab, setActiveTab] = useState("favorites");
-  const [movies, setMovies] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
@@ -108,7 +108,7 @@ const User = () => {
         })
       );
       setWatchlistMovies(detailed);
-      setMovies(detailed);
+
       setLoading(false);
     };
 
@@ -138,7 +138,6 @@ const User = () => {
           })
         );
         setFavoriteMovies(moviesWithDetails);
-        setMovies(moviesWithDetails);
       } catch (error) {
         console.error("Error fetching movies:", error);
       } finally {
@@ -155,6 +154,7 @@ const User = () => {
         // Nếu tab hiện tại là favorites -> xóa trực tiếp từ bảng favorites
         const result = await removeFromFavorites(movie.movie_id);
         if (!result.success) throw new Error(result.message);
+        setFavoriteMovies((prev) => prev.filter((m) => m.id !== movie.id));
       } else {
         // Nếu là watchlist -> dùng helper removeFromWatchlist
         const result = await removeFromWatchlist(
@@ -162,10 +162,10 @@ const User = () => {
           movie.movie_id
         );
         if (!result.success) throw new Error(result.message);
+        setWatchlistMovies((prev) => prev.filter((m) => m.id !== movie.id));
       }
 
       // Cập nhật lại state UI
-      setMovies((prev) => prev.filter((m) => m.id !== movie.id));
 
       alert("Đã xóa phim khỏi danh sách");
     } catch (error) {
@@ -431,7 +431,7 @@ const User = () => {
                             className="btn-delete"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDelete(movie.movie_id);
+                              handleDelete(movie);
                             }}
                           >
                             ✕
