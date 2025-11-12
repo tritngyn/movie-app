@@ -78,6 +78,7 @@ export default function Auth() {
 
         if (error) throw error;
         setSuccess("Đăng nhập thành công!");
+        console.log("ai đã  sign in:", data.user);
       } else {
         //  Đăng ký
         const { data, error } = await supabase.auth.signUp({
@@ -92,6 +93,7 @@ export default function Auth() {
 
         if (error) throw error;
         setSuccess("Đăng ký thành công! Vui lòng xác nhận email của bạn.");
+        console.log("ai đã  sign up:", data.user);
       }
 
       setTimeout(() => {

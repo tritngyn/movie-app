@@ -241,38 +241,6 @@
       }
     }
   }
-
-  // COMMENT-SECTION
-  .comment-section {
-    border-top: 1px solid #222;
-    padding-top: 20px;
-
-    h2 {
-      color: var(--gold);
-      margin-bottom: 10px;
-    }
-
-    textarea {
-      width: 100%;
-      background: #1a1a1a;
-      color: #fff;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 15px;
-      resize: vertical;
-      margin-bottom: 10px;
-    }
-
-    button {
-      background: var(--gold);
-      color: #000;
-      border: none;
-      padding: 10px 25px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  }
 }
 
 /* Tab Content */

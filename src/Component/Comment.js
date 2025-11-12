@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import CommentIcon from "@mui/icons-material/Comment";
 import "./Comment.scss";
 import hqh from "../assets/hqh.jfif";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
-import CommentIcon from "@mui/icons-material/Comment";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 import { addComment, getCommentsByMovie, supabase } from "../supabaseClient";
-
+import SendIcon from "@mui/icons-material/Send";
 const Comment = ({ movieId }) => {
   const [user, setUser] = useState(null);
   const [comments, setComments] = useState([]);
@@ -69,16 +69,8 @@ const Comment = ({ movieId }) => {
         <>
           {/* Comment Stats */}
           <div className="comment-header">
-            <span className="icon">💬</span>
-            <h3>Bình luận (84)</h3>
-            <div className="button-group">
-              <button size="sm" className="btn-outline">
-                Bình luận
-              </button>
-              <button size="sm" className="btn-outline">
-                Đánh giá
-              </button>
-            </div>
+            <CommentIcon />
+            <h3>Bình luận </h3>
           </div>
 
           {/* Comment Input */}
@@ -92,13 +84,12 @@ const Comment = ({ movieId }) => {
                 required
               />
               <div className="input-footer">
-                <div className="spoiler">
-                  <input type="checkbox" id="spoiler" />
-                  <label htmlFor="spoiler">Tiết lộ?</label>
-                </div>
                 <div className="submit-group">
                   <button className="btn-send">
-                    Gửi <span>✈️</span>
+                    Gửi{" "}
+                    <span>
+                      <SendIcon />{" "}
+                    </span>
                   </button>
                 </div>
               </div>
