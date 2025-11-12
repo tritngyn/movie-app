@@ -160,7 +160,6 @@ $transition: all 0.3s ease;
           }
 
           &.active {
-            background: $accent-primary;
             color: $text-primary;
             font-weight: 600;
           }
@@ -506,18 +505,6 @@ $transition: all 0.3s ease;
 
       &:hover .movie-overlay {
         opacity: 1;
-      }
-
-      .movie-badge {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        background: $accent-primary;
-        color: $text-primary;
-        padding: 0.25rem 0.5rem;
-        border-radius: $border-radius;
-        font-size: 0.875rem;
-        z-index: 1;
       }
     }
   }

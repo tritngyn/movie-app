@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./MovieDetail.scss";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -32,8 +32,10 @@ const MovieDetail = () => {
   //dropdown chỗ thêm phim
   const [showDropdown, setShowDropdown] = useState(false);
   const [watchlists, setWatchlists] = useState([]);
-  // Dùng hook click outside
-  useClickOutside(showDropdown, () => setShowDropdown(false));
+
+  const dropdownRef = useRef(null);
+  useClickOutside(dropdownRef, () => setShowDropdown(false));
+
   //check user và lấy list phim
   useEffect(() => {
     const initUserAndWatchlists = async () => {
@@ -80,20 +82,22 @@ const MovieDetail = () => {
     const fetchInitialStates = async () => {
       if (!movie) return;
 
-      const favoriteStatus = await isInFavorites(movie);
-      const watchlistStatus = await isInWatchlist(movie);
+      const favoriteStatus = await isInFavorites(movie.id);
+      // nếu user có ít nhất 1 danh sách
+      let watchlistStatus = false;
+      if (watchlists.length > 0) {
+        watchlistStatus = await isInWatchlist(movie.id, watchlists[0].id);
+      }
 
       setIsFavorite(favoriteStatus);
       setIsInList(watchlistStatus);
     };
 
     fetchInitialStates();
-  }, [movie]);
+  }, [movie, user, watchlists]);
 
   if (loading) return <p>Loading...</p>;
   if (!movie) return <p>Không có dữ liệu phim.</p>;
-
-  console.log("fetch:", category);
 
   const handleToggleFavorite = async () => {
     const result = await toggleFavorite(movie);
@@ -122,14 +126,15 @@ const MovieDetail = () => {
     }
   };
 
-  const handleToggleWatchlist = async () => {
-    const result = await toggleWatchlist(movie);
+  const handleToggleWatchlist = async (listId, listName) => {
+    const result = await toggleWatchlist(movie, listId);
+
     if (result.success) {
       setIsInList(!isInList);
       Toastify({
-        text: !isFavorite
-          ? "Đã thêm vào danh sách !"
-          : "Đã xóa khỏi danh sách !",
+        text: !isInList
+          ? `Đã thêm vào "${listName}"!`
+          : `Đã xóa khỏi "${listName}"!`,
         duration: 3000,
         gravity: "bottom",
         position: "right",
@@ -139,13 +144,12 @@ const MovieDetail = () => {
       }).showToast();
     } else {
       Toastify({
-        text: "Lỗi khi cập nhật danh sách!",
+        text: result.message || "Lỗi khi cập nhật danh sách!",
         duration: 3000,
         gravity: "bottom",
         position: "right",
         backgroundColor: "red",
       }).showToast();
-      console.log(result.message, "error");
     }
   };
 
@@ -206,47 +210,41 @@ const MovieDetail = () => {
               <span>Yêu Thích</span>
             </button>
             {/* Nút thêm phim vào customized list */}
-            {user ? (
-              <div className="add-to-watchlist-container">
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className={`btn-icon ${isInList ? "active" : ""}`}
-                  title="Thêm vào danh sách"
-                >
-                  {isInList ? (
-                    <DoneIcon className="icon" />
-                  ) : (
-                    <AddIcon className="icon" />
-                  )}
-                  <span>Thêm Vào</span>
-                </button>
-
-                {showDropdown && (
-                  <div className="dropdown-list">
-                    {watchlists.length === 0 ? (
-                      <p className="empty">Chưa có danh sách</p>
-                    ) : (
-                      watchlists.map((list) => (
-                        <button
-                          key={list.id}
-                          className="dropdown-item"
-                          onClick={handleToggleWatchlist}
-                        >
-                          {list.name}
-                        </button>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
+            <div className="add-to-watchlist-container" ref={dropdownRef}>
               <button
-                className="btn-login-to-add"
-                onClick={() => (window.location.href = "/login")}
+                onClick={() => setShowDropdown(!showDropdown)}
+                className={`btn-icon ${isInList ? "active" : ""}`}
+                title="Thêm vào danh sách"
               >
-                🔒 Đăng nhập để thêm phim
+                {isInList ? (
+                  <DoneIcon className="icon" />
+                ) : (
+                  <AddIcon className="icon" />
+                )}
+                <span>Thêm Vào</span>
               </button>
-            )}
+
+              {showDropdown && (
+                <div className="dropdown-list">
+                  {watchlists.length === 0 ? (
+                    <p className="empty">Bạn chưa có danh sách nào</p>
+                  ) : (
+                    watchlists.map((list) => (
+                      <button
+                        key={list.id}
+                        className="dropdown-item"
+                        onClick={() =>
+                          handleToggleWatchlist(list.id, list.name)
+                        }
+                      >
+                        {list.name}
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+
             <button className="btn-icon" title="Chia sẻ">
               <ShareIcon className="icon" />
               <span>Chia sẻ</span>
@@ -347,7 +345,7 @@ const MovieDetail = () => {
               </div>
             )}
           </div>
-          <Comment />
+          <Comment movieId={movie.id} />
         </div>
       </div>
     </div>

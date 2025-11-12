@@ -8,6 +8,12 @@ import {
   removeFromFavorites,
 } from "../../supabaseClient";
 import WatchlistDropdown from "./WatchList";
+import StarIcon from "@mui/icons-material/Star";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonIcon from "@mui/icons-material/Person";
+import { red } from "@mui/material/colors";
 // TMDB API
 const TMDB_API_KEY = "b13aa17feb96ef0ae039e6c0531f586a";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -24,6 +30,10 @@ const User = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  //state của 2 loại list
+  const [favoriteMovies, setFavoriteMovies] = useState([]);
+  const [watchlistMovies, setWatchlistMovies] = useState([]);
+
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
 
@@ -58,7 +68,7 @@ const User = () => {
       return null;
     }
   };
-  //WatchList
+  //fetch những WatchList
   useEffect(() => {
     if (!user) return;
 
@@ -97,21 +107,21 @@ const User = () => {
           return { ...item, ...detail };
         })
       );
-
+      setWatchlistMovies(detailed);
       setMovies(detailed);
       setLoading(false);
     };
 
     fetchMovies();
   }, [selectedList]);
-
+  //fetch list phim từ favorite
   useEffect(() => {
     if (!user || activeTab === "account") return;
     const fetchMovies = async () => {
       setLoading(true);
       try {
         const { data, error } = await supabase
-          .from(activeTab === "favorites" ? "favorites" : "watchlist")
+          .from("favorites")
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false });
@@ -127,7 +137,7 @@ const User = () => {
             };
           })
         );
-
+        setFavoriteMovies(moviesWithDetails);
         setMovies(moviesWithDetails);
       } catch (error) {
         console.error("Error fetching movies:", error);
@@ -139,20 +149,23 @@ const User = () => {
     fetchMovies();
   }, [activeTab, user]);
 
-  const handleDelete = async (movieId) => {
+  const handleDelete = async (movie) => {
     try {
       if (activeTab === "favorites") {
         // Nếu tab hiện tại là favorites -> xóa trực tiếp từ bảng favorites
-        const result = await removeFromFavorites(movieId);
+        const result = await removeFromFavorites(movie.movie_id);
         if (!result.success) throw new Error(result.message);
       } else {
         // Nếu là watchlist -> dùng helper removeFromWatchlist
-        const result = await removeFromWatchlist(movieId);
+        const result = await removeFromWatchlist(
+          movie.watchlist_id,
+          movie.movie_id
+        );
         if (!result.success) throw new Error(result.message);
       }
 
       // Cập nhật lại state UI
-      setMovies((prev) => prev.filter((m) => m.id !== movieId));
+      setMovies((prev) => prev.filter((m) => m.id !== movie.id));
 
       alert("Đã xóa phim khỏi danh sách");
     } catch (error) {
@@ -238,7 +251,10 @@ const User = () => {
               onClick={() => setActiveTab("favorites")}
               className={activeTab === "favorites" ? "active" : ""}
             >
-              <span className="icon">❤️</span> Yêu thích
+              <span className="icon">
+                <FavoriteIcon sx={{ color: red[500] }} />{" "}
+              </span>{" "}
+              Yêu thích
             </button>
           </li>
           <li>
@@ -246,7 +262,10 @@ const User = () => {
               onClick={() => setActiveTab("watchlist")}
               className={activeTab === "watchlist" ? "active" : ""}
             >
-              <span className="icon">📋</span> Danh sách
+              <span className="icon">
+                <FormatListBulletedIcon />
+              </span>{" "}
+              Danh sách
             </button>
           </li>
           <li>
@@ -254,12 +273,18 @@ const User = () => {
               onClick={() => setActiveTab("account")}
               className={activeTab === "account" ? "active" : ""}
             >
-              <span className="icon">👤</span> Tài khoản
+              <span className="icon">
+                <PersonIcon />{" "}
+              </span>{" "}
+              Tài khoản
             </button>
           </li>
           <li>
             <button onClick={handleSignOut} className="signout-btn">
-              <span className="icon">🚪</span> Đăng xuất
+              <span className="icon">
+                <LogoutIcon />
+              </span>{" "}
+              Đăng xuất
             </button>
           </li>
         </ul>
@@ -366,42 +391,25 @@ const User = () => {
             </div>
           </div>
         )}
-        {activeTab === "watchlist" && (
-          <WatchlistDropdown
-            user={user}
-            watchlists={watchlists}
-            setWatchlists={setWatchlists}
-            selectedList={selectedList}
-            setSelectedList={setSelectedList}
-          />
-        )}
-
-        {activeTab !== "account" && (
+        {/* TAB YÊU THÍCH */}
+        {activeTab === "favorites" && (
           <>
-            <h2 className="page-title">
-              {activeTab === "favorites"
-                ? "Phim yêu thích"
-                : "Danh sách của tôi"}
-            </h2>
+            <h2 className="page-title">Phim yêu thích</h2>
 
             {loading ? (
               <div className="loading-container">
                 <div className="spinner"></div>
               </div>
-            ) : movies.length === 0 ? (
+            ) : favoriteMovies.length === 0 ? (
               <div className="empty-state">
-                <p>
-                  {activeTab === "favorites"
-                    ? "Bạn chưa có phim yêu thích nào"
-                    : "Danh sách của bạn đang trống"}
-                </p>
+                <p>Bạn chưa có phim yêu thích nào</p>
                 <button onClick={() => (window.location.href = "/")}>
                   Khám phá phim
                 </button>
               </div>
             ) : (
               <div className="movies-grid">
-                {movies.map((movie) => (
+                {favoriteMovies.map((movie) => (
                   <div key={movie.id} className="movie-card">
                     <div
                       className="movie-poster"
@@ -409,30 +417,21 @@ const User = () => {
                     >
                       <img
                         src={
-                          movie.poster_path
-                            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                          movie.poster
+                            ? `https://image.tmdb.org/t/p/w500${movie.poster}`
                             : "https://via.placeholder.com/500x750?text=No+Image"
                         }
-                        alt={movie.title || movie.name}
+                        alt={movie.movie_title}
                       />
                       <div className="movie-overlay">
-                        <h4>{movie.title || movie.name}</h4>
-                        <div className="movie-meta">
-                          <span className="rating">
-                            ⭐ {movie.vote_average?.toFixed(1) || "N/A"}
-                          </span>
-                          <span className="divider">•</span>
-                          <span className="year">
-                            {movie.release_date?.split("-")[0] || "N/A"}
-                          </span>
-                        </div>
+                        <h4>{movie.movie_title}</h4>
                         <div className="movie-actions">
                           <button className="btn-detail">Xem chi tiết</button>
                           <button
                             className="btn-delete"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDelete(movie.id);
+                              handleDelete(movie.movie_id);
                             }}
                           >
                             ✕
@@ -440,11 +439,72 @@ const User = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="movie-badge">
-                      {activeTab === "favorites" ? "❤️" : "📋"}
-                    </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* TAB DANH SÁCH */}
+        {activeTab === "watchlist" && (
+          <>
+            <h2 className="page-title">Danh sách của tôi</h2>
+            <WatchlistDropdown
+              user={user}
+              watchlists={watchlists}
+              setWatchlists={setWatchlists}
+              selectedList={selectedList}
+              setSelectedList={setSelectedList}
+            />
+            {selectedList ? (
+              loading ? (
+                <div className="loading-container">
+                  <div className="spinner"></div>
+                </div>
+              ) : watchlistMovies.length === 0 ? (
+                <div className="empty-state">
+                  <p>Danh sách này đang trống</p>
+                </div>
+              ) : (
+                <div className="movies-grid">
+                  {watchlistMovies.map((movie) => (
+                    <div key={movie.id} className="movie-card">
+                      <div
+                        className="movie-poster"
+                        onClick={() => handleMovieClick(movie.movie_id)}
+                      >
+                        <img
+                          src={
+                            movie.poster_path
+                              ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                              : "https://via.placeholder.com/500x750?text=No+Image"
+                          }
+                          alt={movie.title}
+                        />
+                        <div className="movie-overlay">
+                          <h4>{movie.title}</h4>
+                          <div className="movie-actions">
+                            <button className="btn-detail">Xem chi tiết</button>
+                            <button
+                              className="btn-delete"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(movie);
+                              }}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : (
+              <div className="empty-state">
+                <p>Chọn một danh sách để xem phim</p>
               </div>
             )}
           </>

@@ -1,82 +1,119 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Comment.scss";
 import hqh from "../assets/hqh.jfif";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import CommentIcon from "@mui/icons-material/Comment";
-const mockComments = [
-  {
-    id: 1,
-    author: "Duyen Hong",
-    avatar: "",
-    isVIP: true,
-    likes: 0,
-    dislikes: 0,
-    time: "4 giờ trước",
-    comment: "love this one",
-  },
-];
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
+import { addComment, getCommentsByMovie, supabase } from "../supabaseClient";
 
-export default function CommentSection() {
-  const [comment, setComment] = useState("");
-  const [charCount, setCharCount] = useState(0);
+const Comment = ({ movieId }) => {
   const maxChars = 1000;
+  const [user, setUser] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleCommentChange = (e) => {
-    const text = e.target.value;
-    if (text.length <= maxChars) {
-      setComment(text);
-      setCharCount(text.length);
+  // lấy user hiện tại
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
+
+  // load comment
+  useEffect(() => {
+    const loadComments = async () => {
+      const data = await getCommentsByMovie(movieId);
+      setComments(data);
+    };
+    console.log("movieId in Comment:", movieId);
+    if (movieId) loadComments();
+  }, [movieId]);
+
+  // gửi bình luận
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+
+    setLoading(true);
+    const result = await addComment(movieId, content);
+    setLoading(false);
+
+    if (result.success) {
+      setComments((prev) => [result.data, ...prev]);
+      setContent("");
+      Toastify({
+        text: "Bình luận đã được đăng!",
+        duration: 2000,
+        gravity: "bottom",
+        position: "right",
+        style: { background: "linear-gradient(to right, #00b09b, #96c93d)" },
+      }).showToast();
+    } else {
+      Toastify({
+        text: result.message || "Không thể đăng bình luận.",
+        duration: 3000,
+        gravity: "bottom",
+        position: "right",
+        style: { background: "red" },
+      }).showToast();
     }
   };
-
   return (
     <div className="comment-section">
-      {/* Comment Stats */}
-      <div className="comment-header">
-        <span className="icon">💬</span>
-        <h3>Bình luận (84)</h3>
-        <div className="button-group">
-          <button size="sm" className="btn-outline">
-            Bình luận
-          </button>
-          <button size="sm" className="btn-outline">
-            Đánh giá
-          </button>
-        </div>
-      </div>
-
-      {/* Comment Input */}
-      <div className="comment-input">
-        <p className="login-notice">
-          Vui lòng <span>đăng nhập</span> để tham gia bình luận.
-        </p>
-        <div className="input-wrapper">
-          <textarea
-            value={comment}
-            onChange={handleCommentChange}
-            placeholder="Viết bình luận"
-            className="input-textarea"
-          />
-          <div className="input-footer">
-            <div className="spoiler">
-              <input type="checkbox" id="spoiler" />
-              <label htmlFor="spoiler">Tiết lộ?</label>
-            </div>
-            <div className="submit-group">
-              <span className="char-count">
-                {charCount} / {maxChars}
-              </span>
-              <button className="btn-send">
-                Gửi <span>✈️</span>
+      {user ? (
+        <>
+          {/* Comment Stats */}
+          <div className="comment-header">
+            <span className="icon">💬</span>
+            <h3>Bình luận (84)</h3>
+            <div className="button-group">
+              <button size="sm" className="btn-outline">
+                Bình luận
+              </button>
+              <button size="sm" className="btn-outline">
+                Đánh giá
               </button>
             </div>
           </div>
-        </div>
-      </div>
 
+          {/* Comment Input */}
+          <div className="comment-input">
+            <form className="input-wrapper" onSubmit={handleSubmit}>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Viết bình luận"
+                className="input-textarea"
+                required
+              />
+              <div className="input-footer">
+                <div className="spoiler">
+                  <input type="checkbox" id="spoiler" />
+                  <label htmlFor="spoiler">Tiết lộ?</label>
+                </div>
+                <div className="submit-group">
+                  <button className="btn-send">
+                    Gửi <span>✈️</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </>
+      ) : (
+        <p className="login-notice">
+          Vui lòng <span>đăng nhập</span> để tham gia bình luận.
+        </p>
+      )}
       {/* Comments List */}
       <div className="comment-list">
-        {mockComments.map((comment) => (
+        {comments.map((comment) => (
           <div key={comment.id} className="comment-card">
             <div className="card-top">
               <avatar className="avatar">
@@ -84,12 +121,11 @@ export default function CommentSection() {
               </avatar>
               <div className="card-body">
                 <div className="card-header">
-                  <span className="author">{comment.author}</span>
+                  <span className="author">{comment.username}</span>
 
-                  <span className="time">{comment.time}</span>
-                  <badge className="episode-badge">0.4 - Tập 3</badge>
+                  <span className="time">{comment.created_at}</span>
                 </div>
-                <p className="content">{comment.comment}</p>
+                <p className="content">{comment.content}</p>
                 <div className="card-actions">
                   <button className="btn-action">
                     <ThumbsUp className="icon-sm" />
@@ -110,4 +146,5 @@ export default function CommentSection() {
       </div>
     </div>
   );
-}
+};
+export default Comment;

@@ -6,6 +6,7 @@ const supabaseKey =
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+/* FAVORITES */
 /**
  * Thêm phim vào Favorites
  * @param {Object} movie - Thông tin phim từ TMDB
@@ -98,89 +99,6 @@ export const removeFromFavorites = async (movieId) => {
     return { success: false, message: error.message };
   }
 };
-
-/**
- * Thêm phim vào Watchlist
- * @param {Object} movie - Thông tin phim từ TMDB
- * @returns {Promise<Object>} - Kết quả thêm phim
- */
-export const addToWatchlist = async (movie) => {
-  try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      throw new Error("Vui lòng đăng nhập");
-    }
-
-    // Kiểm tra xem phim đã có trong watchlist chưa
-    const { data: existing } = await supabase
-      .from("favorites")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("movie_id", movie.id)
-      .maybeSingle();
-
-    if (existing) {
-      return { success: false, message: "Phim đã có trong danh sách" };
-    }
-
-    // Thêm phim vào watchlist
-    const { data, error } = await supabase
-      .from("watchlist")
-      .insert([
-        {
-          user_id: user.id,
-          movie_id: movie.id,
-          title: movie.title,
-          name: movie.name,
-          poster_path: movie.poster_path,
-          vote_average: movie.vote_average,
-          release_date: movie.release_date,
-        },
-      ])
-      .select();
-
-    if (error) throw error;
-
-    return { success: true, message: "Đã thêm vào danh sách", data };
-  } catch (error) {
-    console.error("Error adding to watchlist:", error);
-    return { success: false, message: error.message };
-  }
-};
-
-/**
- * Xóa phim khỏi Watchlist
- * @param {Number} movieId - ID phim từ TMDB
- * @returns {Promise<Object>} - Kết quả xóa phim
- */
-export const removeFromWatchlist = async (movieId) => {
-  try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      throw new Error("Vui lòng đăng nhập");
-    }
-
-    const { error } = await supabase
-      .from("watchlist")
-      .delete()
-      .eq("user_id", user.id)
-      .eq("movie_id", movieId);
-
-    if (error) throw error;
-
-    return { success: true, message: "Đã xóa khỏi danh sách" };
-  } catch (error) {
-    console.error("Error removing from watchlist:", error);
-    return { success: false, message: error.message };
-  }
-};
-
 /**
  * Kiểm tra phim có trong Favorites không
  * @param {Number} movieId - ID phim từ TMDB
@@ -192,7 +110,7 @@ export const isInFavorites = async (movieId) => {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return false;
+    if (!user || !movieId) return false;
 
     const { data } = await supabase
       .from("favorites")
@@ -206,33 +124,120 @@ export const isInFavorites = async (movieId) => {
     return false;
   }
 };
-
+/* Watchlist */
 /**
- * Kiểm tra phim có trong Watchlist không
- * @param {Number} movieId - ID phim từ TMDB
- * @returns {Promise<Boolean>} - True nếu có trong watchlist
+ * Tạo danh sách phim mới (createWatchlist)
  */
-export const isInWatchlist = async (movieId) => {
+export const createWatchlist = async (name) => {
   try {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+    if (!user) throw new Error("Vui lòng đăng nhập");
 
-    if (!user) return false;
+    const { data, error } = await supabase
+      .from("watchlists")
+      .insert([{ user_id: user.id, name }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { success: true, message: "Đã tạo danh sách mới", data };
+  } catch (error) {
+    console.error("Error creating watchlist:", error);
+    return { success: false, message: error.message };
+  }
+};
+/**
+ * Thêm phim vào Watchlist
+ * @param {Object} movie - Thông tin phim từ TMDB
+ * @returns {Promise<Object>} - Kết quả thêm phim
+ */
+/**
+ * Thêm phim vào Watchlist cụ thể
+ */
+export const addToWatchlist = async (movie, watchlistId) => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("Vui lòng đăng nhập");
+
+    if (!watchlistId) throw new Error("Thiếu watchlistId");
+
+    // Kiểm tra phim đã có trong danh sách đó chưa
+    const { data: existing } = await supabase
+      .from("watchlist_movies")
+      .select("id")
+      .eq("watchlist_id", watchlistId)
+      .eq("movie_id", movie.id)
+      .maybeSingle();
+
+    if (existing) {
+      return { success: false, message: "Phim đã có trong danh sách" };
+    }
+
+    // Thêm phim vào danh sách cụ thể
+    const { error } = await supabase.from("watchlist_movies").insert([
+      {
+        watchlist_id: watchlistId,
+        movie_id: movie.id,
+        title: movie.title || movie.name,
+        poster_path: movie.poster_path,
+      },
+    ]);
+
+    if (error) throw error;
+
+    return { success: true, message: "Đã thêm vào danh sách" };
+  } catch (error) {
+    console.error("Error adding to watchlist:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+/**
+ * Xóa phim khỏi Watchlist
+ */
+export const removeFromWatchlist = async (watchlistId, movieId) => {
+  try {
+    if (!watchlistId || !movieId)
+      throw new Error("Thiếu watchlistId hoặc movieId");
+
+    const { error } = await supabase
+      .from("watchlist_movies")
+      .delete()
+      .eq("watchlist_id", watchlistId)
+      .eq("movie_id", movieId);
+
+    if (error) throw error;
+
+    return { success: true, message: "Đã xóa khỏi danh sách" };
+  } catch (error) {
+    console.error("Error removing from watchlist:", error);
+    return { success: false, message: error.message };
+  }
+};
+/**
+ * Kiểm tra phim có trong Watchlist cụ thể không
+ */
+export const isInWatchlist = async (movieId, watchlistId) => {
+  try {
+    if (!watchlistId || !movieId) return false;
 
     const { data } = await supabase
-      .from("favorites")
+      .from("watchlist_movies")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("watchlist_id", watchlistId)
       .eq("movie_id", movieId)
       .maybeSingle();
 
     return !!data;
   } catch (error) {
+    console.error("Error checking watchlist:", error);
     return false;
   }
 };
-
 /**
  * Toggle phim vào/ra khỏi Favorites
  * @param {Object} movie - Thông tin phim từ TMDB
@@ -253,13 +258,13 @@ export const toggleFavorite = async (movie) => {
  * @param {Object} movie - Thông tin phim từ TMDB
  * @returns {Promise<Object>} - Kết quả toggle
  */
-export const toggleWatchlist = async (movie) => {
-  const inWatchlist = await isInWatchlist(movie.id);
+export const toggleWatchlist = async (movie, watchlistId) => {
+  const inWatchlist = await isInWatchlist(movie.id, watchlistId);
 
   if (inWatchlist) {
-    return await removeFromWatchlist(movie.id);
+    return await removeFromWatchlist(movie.id, watchlistId);
   } else {
-    return await addToWatchlist(movie);
+    return await addToWatchlist(movie, watchlistId);
   }
 };
 
@@ -294,7 +299,7 @@ export const getFavorites = async () => {
  * Lấy tất cả phim trong watchlist của user
  * @returns {Promise<Array>} - Danh sách phim trong watchlist
  */
-export const getWatchlist = async () => {
+export const getWatchlists = async () => {
   try {
     const {
       data: { user },
@@ -303,16 +308,90 @@ export const getWatchlist = async () => {
     if (!user) return [];
 
     const { data, error } = await supabase
-      .from("watchlist")
+      .from("watchlists")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-
     return data || [];
   } catch (error) {
     console.error("Error fetching watchlist:", error);
+    return [];
+  }
+};
+/**
+ * Lấy phim trong danh sách cụ thể
+ */
+export const getMoviesInWatchlist = async (watchlistId) => {
+  const { data, error } = await supabase
+    .from("watchlist_movies")
+    .select("*")
+    .eq("watchlist_id", watchlistId)
+    .order("added_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching movies:", error);
+    return [];
+  }
+  return data;
+};
+/* 
+   COMMENTS
+ */
+
+/**
+ * Gửi bình luận cho phim
+ * @param {number} movieId - TMDB movie ID
+ * @param {string} content - Nội dung comment
+ */
+export const addComment = async (movieId, content) => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Vui lòng đăng nhập trước khi bình luận.");
+
+    const { data, error } = await supabase
+      .from("comments")
+      .insert([
+        {
+          user_id: user.id,
+          username: user.email.split("@")[0],
+          movie_id: movieId,
+          content,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error adding comment:", error.message);
+    return { success: false, message: error.message };
+  }
+};
+
+/**
+ * Lấy tất cả bình luận của 1 phim
+ * @param {number} movieId
+ */
+export const getCommentsByMovie = async (movieId) => {
+  try {
+    const { data, error } = await supabase
+      .from("comments")
+      .select("*")
+      .eq("movie_id", movieId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching comments:", error.message);
     return [];
   }
 };
