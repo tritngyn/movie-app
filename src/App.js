@@ -24,7 +24,7 @@ function App() {
   const [categoryName, setCategoryName] = useState("Popular");
   const [selectedGenre, setSelectedGenre] = useState("");
   const [user, setUser] = useState(null);
-
+  console.log(searchterm, loading, selectedGenre);
   useEffect(() => {
     async function getUser() {
       const {
