@@ -1,30 +1,31 @@
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect, useRef } from "react";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import SearchBar from "../Component/SearchBar";
 import "./NAV.css";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import "../assets/hqh.jfif";
 import { supabase } from "../supabaseClient";
-library.add(faBars);
 import { useNavigate } from "react-router-dom";
 import useClickOutside from "../Component/hooks/useClickoutside";
 
+library.add(faBars, faTimes);
+
 const NAV = ({ onSelectGenre, handleClickSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [dropdownGenre, setDropDown] = useState(false);
   const [isSearchBarOpen, setIsSBOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
   const [user, setUser] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
-  // 🔸 Ref cho dropdown và popup
-  const menuRef = useRef(null);
+
   const accountRef = useRef(null);
+  const genreDropdownRef = useRef(null); // Cho desktop dropdown
+  const mobileMenuRef = useRef(null); // Cho mobile menu
 
   const genres = [
     { id: 28, name: "Action" },
@@ -38,27 +39,38 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
     { id: 10752, name: "War" },
   ];
 
-  // Dùng hook click outside
-  useClickOutside(menuRef, () => setIsMenuOpen(false));
   useClickOutside(accountRef, () => setShowPopup(false));
-
+  useClickOutside(mobileMenuRef, () => setIsMenuOpen(false));
+  useClickOutside(genreDropdownRef, () => setDropDown(false));
   const toggleSearchBar = () => {
     setIsSBOpen(!isSearchBarOpen);
   };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  const handleGenreClick = (genreID, genreName) => {
-    onSelectGenre(genreID, genreName);
+  const toogleGenre = () => {
+    setDropDown(!dropdownGenre);
+    console.log("drop down genre");
+  };
+
+  const handleMobileLinkClick = () => {
     setIsMenuOpen(false);
+    setDropDown(false);
+  };
+  const handleGenreClick = (genreID, genreName) => {
+    console.log("pick genre");
+    onSelectGenre(genreID, genreName);
     const movieListElement = document.querySelector(".movie-list");
     if (movieListElement)
       movieListElement.scrollIntoView({ behavior: "smooth" });
+
+    setIsMenuOpen(false); // Đóng mobile menu
+    setDropDown(false); // Đóng dropdown genre
   };
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) setScrolled(true);
-      else setScrolled(false);
+      setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -66,7 +78,6 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
   }, []);
 
   useEffect(() => {
-    // Lấy user hiện tại
     const getUser = async () => {
       const {
         data: { user },
@@ -75,7 +86,6 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
     };
     getUser();
 
-    // Theo dõi sự thay đổi session (login/logout)
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user || null);
@@ -84,18 +94,29 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
 
     return () => listener.subscription.unsubscribe();
   }, []);
+
   return (
-    <div className={`nav ${scrolled ? "scrolled" : ""}`}>
-      <div className="nav-inner">
-        {!isSearchBarOpen && (
-          <>
-            <div className="nav-left" ref={menuRef}>
-              <div className="navbarlinks">
-                <button className="hamburger" onClick={toggleMenu}>
-                  <FontAwesomeIcon icon="fa-solid fa-bars" />
+    <>
+      <div className={`nav ${scrolled ? "scrolled" : ""}`}>
+        <div className="nav-inner">
+          <div className="nav-left">
+            <h1 className="logo">PHIM</h1>
+
+            {/* Desktop Links - Hidden on Mobile */}
+            <div className="desktop-links">
+              <NavLink to="/" end>
+                HOME
+              </NavLink>
+              <NavLink to="/phim_le">Phim lẻ</NavLink>
+              <NavLink to="/phim_bo">Phim bộ</NavLink>
+
+              {/* Genre Dropdown for Desktop */}
+              <div className="genre-dropdown" ref={genreDropdownRef}>
+                <button className="genre-trigger" onClick={toogleGenre}>
+                  Thể loại
                 </button>
-                {isMenuOpen && (
-                  <ul className="dropdown-menu">
+                {dropdownGenre && (
+                  <div className="dropdown-menu">
                     {genres.map((genre) => (
                       <Link
                         to={`/the_loai/${genre.id}`}
@@ -105,63 +126,109 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
                         {genre.name}
                       </Link>
                     ))}
-                  </ul>
+                  </div>
                 )}
               </div>
-              <h1 className="logo">PHIM</h1>
-              <NavLink to="/" end>
-                HOME
-              </NavLink>
-              <NavLink to="/phim_le">Phim lẻ</NavLink>
-              <NavLink to="/phim_bo">Phim bộ</NavLink>
             </div>
-          </>
-        )}
+          </div>
 
-        <div className="nav-right" ref={accountRef}>
-          <button className="search-btn">
-            <SearchIcon className="searchicon" onClick={toggleSearchBar} />
-          </button>
-          {isSearchBarOpen && (
-            <>
-              <SearchBar OnSearch={handleClickSearch} />
-              <ClearIcon onClick={() => setIsSBOpen(!isSearchBarOpen)} />
-            </>
-          )}
-          <div className="account-container">
-            <button
-              className="account-btn"
-              onClick={() => {
-                if (user) setShowPopup(!showPopup);
-                else navigate("/auth");
-              }}
-            >
-              <AccountCircleIcon />
-            </button>
-
-            {showPopup && user && (
-              <div className="account-popup">
-                <p className="username">
-                  {user.user_metadata?.full_name || user.email}
-                </p>
-                <NavLink to="/user">Thành viên</NavLink>
-                <div className="divider" />
-                <button
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    setShowPopup(false);
-                    navigate("/");
-                  }}
-                  className="logout-btn"
-                >
-                  Đăng xuất
+          <div className="nav-right" ref={accountRef}>
+            {!isSearchBarOpen ? (
+              <>
+                <button className="search-btn" onClick={toggleSearchBar}>
+                  <SearchIcon className="searchicon" />
                 </button>
+
+                <div className="account-container">
+                  <button
+                    className="account-btn"
+                    onClick={() => {
+                      if (user) setShowPopup(!showPopup);
+                      else navigate("/auth");
+                    }}
+                  >
+                    <AccountCircleIcon />
+                  </button>
+
+                  {showPopup && user && (
+                    <div className="account-popup">
+                      <p className="username">
+                        {user.user_metadata?.full_name || user.email}
+                      </p>
+                      <NavLink to="/user">Thành viên</NavLink>
+                      <div className="divider" />
+                      <button
+                        onClick={async () => {
+                          await supabase.auth.signOut();
+                          setShowPopup(false);
+                          navigate("/");
+                        }}
+                        className="logout-btn"
+                      >
+                        Đăng xuất
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Hamburger */}
+                <button className="hamburger-mobile" onClick={toggleMenu}>
+                  <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} />
+                </button>
+              </>
+            ) : (
+              <>
+                <SearchBar OnSearch={handleClickSearch} />
+                <button className="close-search" onClick={toggleSearchBar}>
+                  <ClearIcon />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && <div className="nav-overlay" />}
+
+      {/* Mobile Slide-in Menu */}
+      <div
+        className={`mobile-menu ${isMenuOpen ? "active" : ""}`}
+        ref={mobileMenuRef}
+      >
+        <div className="mobile-menu-content">
+          <NavLink to="/" end onClick={handleMobileLinkClick}>
+            HOME
+          </NavLink>
+          <NavLink to="/phim_le" onClick={handleMobileLinkClick}>
+            Phim lẻ
+          </NavLink>
+          <NavLink to="/phim_bo" onClick={handleMobileLinkClick}>
+            Phim bộ
+          </NavLink>
+
+          <div className="mobile-genres" ref={genreDropdownRef}>
+            <button className="genre-trigger" onClick={toogleGenre}>
+              Thể loại
+            </button>
+            {dropdownGenre && (
+              <div className="dropdown-menu" style={{ position: "relative" }}>
+                {genres.map((genre) => (
+                  <Link
+                    to={`/the_loai/${genre.id}`}
+                    key={genre.id}
+                    onClick={() => handleGenreClick(genre.id, genre.name)}
+                  >
+                    {genre.name}
+                  </Link>
+                ))}
               </div>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
+
 export default NAV;
