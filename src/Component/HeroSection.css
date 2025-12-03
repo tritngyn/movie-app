@@ -3,7 +3,7 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  pointer-events: none; /* 👈 Cho phép click xuyên qua */
+  pointer-events: none;
   background: linear-gradient(
     to right,
     rgba(0, 0, 0, 0.8) 30%,
@@ -12,6 +12,7 @@
   );
   z-index: 2;
 }
+
 .hero-swiper {
   position: relative;
   width: 100%;
@@ -32,13 +33,14 @@
   flex-direction: column;
   gap: 16px;
 }
+
 .hero-overview {
-  max-height: calc(3 * 1.5em); /* 3 lines * line-height */
+  max-height: calc(3 * 1.5em);
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 16px;
   line-height: 1.5;
-  max-width: 600px; /* để chữ không kéo dài quá rộng */
+  max-width: 600px;
   margin-top: 15px;
 }
 
@@ -46,9 +48,9 @@
   font-size: 3rem;
   font-weight: 800;
   line-height: 1.2;
-  margin-bottom: 16px;
   margin-bottom: 8px;
 }
+
 .movie-tagline {
   font-style: italic;
   font-size: 1.2rem;
@@ -57,6 +59,12 @@
 
 /* Badges */
 .hero-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-stats {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -71,6 +79,7 @@
   font-size: 0.9rem;
   font-weight: 500;
 }
+
 /* Nút CTA */
 .btn-primary {
   display: inline-flex;
@@ -93,15 +102,6 @@
   background: #f6121d;
 }
 
-/* Responsive */
-@media (min-width: 768px) {
-  .hero-title {
-    font-size: 3rem;
-  }
-  .hero-subtitle {
-    font-size: 1.5rem;
-  }
-}
 /* Genres */
 .genres {
   display: flex;
@@ -115,12 +115,12 @@
   border-radius: 5px;
   font-size: 0.85rem;
 }
+
 /* === THUMBNAIL CAROUSEL (nằm chồng bên phải) === */
 .hero-thumbs {
   position: absolute !important;
   right: 60px !important;
   bottom: 40px !important;
-
   width: 35%;
   z-index: 5;
 }
@@ -149,9 +149,77 @@
   border: 2px solid #e5b109;
   transform: scale(1.05);
 }
-/* Ẩn thumbnail trên mobile */
+
+/* ========== MOBILE RESPONSIVE ========== */
 @media (max-width: 768px) {
+  /* Ẩn thumbnail carousel */
   .hero-thumbs {
+    display: none !important;
+  }
+
+  /* Giảm chiều cao Hero */
+  .hero-swiper {
+    height: 50vh;
+    min-height: 350px;
+  }
+
+  .hero-swiper .lazyload-wrapper,
+  .hero-swiper img {
+    height: 50vh !important;
+    min-height: 350px;
+  }
+
+  /* Điều chỉnh nội dung */
+  .hero-content {
+    bottom: 10px;
+    left: 15px;
+    right: 15px;
+    max-width: calc(100% - 30px);
+    gap: 8px;
+  }
+
+  /* Giảm font size title */
+  .hero-title {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+
+  /* Ẩn overview và tagline */
+  .hero-overview {
     display: none;
+  }
+
+  .movie-tagline {
+    display: none;
+  }
+
+  /* Thu nhỏ badges */
+  .hero-stats {
+    font-size: 0.8rem;
+  }
+
+  .hero-badge,
+  .release-year {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+  }
+
+  /* Thu nhỏ play button */
+  .btn-primary {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+  }
+
+  /* Ẩn genres */
+  .genres {
+    display: none;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .hero-title {
+    font-size: 3rem;
   }
 }

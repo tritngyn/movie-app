@@ -36,7 +36,7 @@ const Hero = ({ categoryName }) => {
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000 }}
         loop={false}
-        simulateTouch={false} // 👈 thêm dòng này
+        simulateTouch={false}
         spaceBetween={20}
         thumbs={{
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,

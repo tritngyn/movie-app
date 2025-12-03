@@ -72,21 +72,48 @@ const MList = ({ categoryName }) => {
       ) : (
         <Swiper
           modules={[Navigation]}
-          spaceBetween={24}
+          spaceBetween={16}
           slidesPerView="auto"
           grabCursor={true}
           navigation
           loop={false}
           breakpoints={{
-            320: { slidesPerView: 2 },
-            640: { slidesPerView: 3 },
-            1024: { slidesPerView: 5 },
-            1440: { slidesPerView: 6 },
+            // Mobile small (320px - 480px)
+            320: {
+              slidesPerView: 2.5,
+              spaceBetween: 12,
+            },
+            // Mobile (480px - 640px)
+            480: {
+              slidesPerView: 3,
+              spaceBetween: 14,
+            },
+            // Tablet (640px - 1024px)
+            640: {
+              slidesPerView: 4,
+              spaceBetween: 16,
+            },
+            // Desktop small (1024px - 1280px)
+            1024: {
+              slidesPerView: 5,
+              spaceBetween: 20,
+            },
+            // Desktop medium (1280px - 1440px)
+            1280: {
+              slidesPerView: 6,
+              spaceBetween: 22,
+            },
+            // Desktop large (1440px+)
+            1440: {
+              slidesPerView: 6,
+              spaceBetween: 24,
+            },
           }}
           style={{
             width: "100%",
             paddingBottom: "10px",
           }}
+          className={styles.swiperContainer}
         >
           {movies.map((movie, index) => (
             <SwiperSlide
