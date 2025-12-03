@@ -1,14 +1,6 @@
-import React from "react";
 import "./MovieCard.scss";
 
-export default function MovieCard({
-  image,
-  title,
-  quality,
-  episode,
-  rating,
-  rank,
-}) {
+export default function MovieCard({ image, title, quality, rating, rank }) {
   return (
     <div className="movie-card">
       <div className="movie-image-wrapper">
@@ -20,12 +12,6 @@ export default function MovieCard({
           {quality && <span className="badge badge-quality">{quality}</span>}
           {rating && <span className="badge badge-rating">{rating}</span>}
         </div>
-
-        {episode && (
-          <div className="movie-episode">
-            <span>{episode}</span>
-          </div>
-        )}
       </div>
 
       <div className="movie-info">
