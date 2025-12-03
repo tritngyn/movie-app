@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import "./SearchResults.css";
+import styles from "./SearchResults.module.css";
 import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
-  const query = searchParams.get("q"); // ✅ lấy từ khóa trong URL
+  const query = searchParams.get("q");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -30,29 +30,34 @@ const SearchResults = () => {
   }, [query]);
 
   return (
-    <div className="container">
+    <div className={styles.container}>
       {loading && <p>Loading...</p>}
+
       {!loading && query && results.length > 0 && (
-        <div className="movies-list">
-          <h2 className="category-title">Search Results for {query}</h2>
-          <div className="movies-grid">
+        <div className={styles.moviesList}>
+          <h2 className={styles.categoryTitle}>Search Results for {query}</h2>
+
+          <div className={styles.moviesGrid}>
             {results.map((movie) => (
               <Link
                 key={movie.id}
-                className="movie-card"
+                className={styles.movieCard}
                 to={`/movie/${movie.id}`}
               >
                 <img
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title}
-                  className="movie-poster"
+                  className={styles.moviePoster}
                 />
-                <span className="movie-title">{movie.title || movie.name}</span>
+                <span className={styles.searchResultsGridTitle}>
+                  {movie.title || movie.name}
+                </span>
               </Link>
             ))}
           </div>
         </div>
       )}
+
       {!loading && query && results.length === 0 && (
         <p>Không tìm thấy kết quả cho {query}.</p>
       )}
