@@ -15,6 +15,8 @@ import GenreList from "./Component/MovieList/GenreList";
 import Auth from "./Component/User/Auth";
 import { supabase } from "./supabaseClient";
 import FilterResults from "./Component/FilterResults";
+import MDBMovieList from "./Component/MovieList/MDBMovieList";
+import UploadMovie from "./Component/Upload/UploadMovie";
 
 function App() {
   const [searchterm, setSearchTerm] = useState("");
@@ -133,6 +135,8 @@ function App() {
           {/* Chi tiết phim */}
           <Route path="/:category/:id" element={<MovieDetail />} />
           <Route path="/filter-results" element={<FilterResults />} />
+          <Route path="/user_film" element={<MDBMovieList />} />
+          <Route path="/upload_film" element={<UploadMovie />} />
         </Routes>
       </BrowserRouter>
       <Footer />

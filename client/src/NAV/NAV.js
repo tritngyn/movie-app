@@ -109,7 +109,8 @@ const NAV = ({ onSelectGenre, handleClickSearch }) => {
               </NavLink>
               <NavLink to="/phim_le">Phim lẻ</NavLink>
               <NavLink to="/phim_bo">Phim bộ</NavLink>
-
+              <NavLink to="/user_film"> User Film</NavLink>
+              <NavLink to="/upload_film">Upload</NavLink>
               {/* Genre Dropdown for Desktop */}
               <div className="genre-dropdown" ref={genreDropdownRef}>
                 <button className="genre-trigger" onClick={toogleGenre}>
