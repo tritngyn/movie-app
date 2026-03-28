@@ -17,7 +17,7 @@ import { supabase } from "./supabaseClient";
 import FilterResults from "./Component/FilterResults";
 import MDBMovieList from "./Component/MovieList/MDBMovieList";
 import UploadMovie from "./Component/Upload/UploadMovie";
-
+import MDBMovieDetail from "./Component/MovieList/MDBMovieDetail";
 function App() {
   const [searchterm, setSearchTerm] = useState("");
   const [searchresults, setSearchResults] = useState([]);
@@ -137,6 +137,7 @@ function App() {
           <Route path="/filter-results" element={<FilterResults />} />
           <Route path="/user_film" element={<MDBMovieList />} />
           <Route path="/upload_film" element={<UploadMovie />} />
+          <Route path="/user_film/:id" element={<MDBMovieDetail />} />
         </Routes>
       </BrowserRouter>
       <Footer />

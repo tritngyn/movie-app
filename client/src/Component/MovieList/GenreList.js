@@ -10,12 +10,13 @@ export default function GenreList({ categoryName }) {
   const [loading, setLoading] = useState(false);
   const { genre } = useParams();
 
-  const constructFetchUrl = () => {
-    if (genre)
-      return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${genre}&api_key=${process.env.REACT_APP_API_KEY}`;
-  };
-
   useEffect(() => {
+    const constructFetchUrl = () => {
+      if (genre)
+        return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${genre}&api_key=${process.env.REACT_APP_API_KEY}`;
+      return "";
+    };
+
     const fetchMovies = async () => {
       setLoading(true);
       try {

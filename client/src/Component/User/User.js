@@ -60,7 +60,7 @@ const User = () => {
   const fetchMovieDetails = async (movieId) => {
     try {
       const response = await axios.get(
-        `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=vi-VN`
+        `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=vi-VN`,
       );
       return response.data;
     } catch (error) {
@@ -105,7 +105,7 @@ const User = () => {
         data.map(async (item) => {
           const detail = await fetchMovieDetails(item.movie_id);
           return { ...item, ...detail };
-        })
+        }),
       );
       setWatchlistMovies(detailed);
 
@@ -135,7 +135,7 @@ const User = () => {
               ...item,
               ...movieDetails,
             };
-          })
+          }),
         );
         setFavoriteMovies(moviesWithDetails);
       } catch (error) {
@@ -159,7 +159,7 @@ const User = () => {
         // Nếu là watchlist -> dùng helper removeFromWatchlist
         const result = await removeFromWatchlist(
           movie.watchlist_id,
-          movie.movie_id
+          movie.movie_id,
         );
         if (!result.success) throw new Error(result.message);
         setWatchlistMovies((prev) => prev.filter((m) => m.id !== movie.id));
@@ -236,7 +236,7 @@ const User = () => {
       <aside className="sidebar">
         <div className="user-info">
           <div className="avatar">
-            <img src={hqh} />
+            <img src={hqh} alt="Avatar nguoi dung" />
           </div>
           <div className="user-details">
             <p className="greeting">Xin chào</p>
@@ -306,7 +306,7 @@ const User = () => {
                   <label>Ngày đăng ký</label>
                   <p>
                     {new Date(userProfile.created_at).toLocaleDateString(
-                      "vi-VN"
+                      "vi-VN",
                     )}
                   </p>
                 </div>

@@ -9,22 +9,22 @@ import "swiper/css/navigation";
 import MovieCard from "./MovieCard";
 import { ChevronRight } from "lucide-react";
 
+const CATEGORY_MAP = {
+  Popular: { type: "category", value: "popular" },
+  Horror: { type: "genre", value: 27 },
+  Action: { type: "genre", value: 28 },
+  Comedy: { type: "genre", value: 35 },
+  Movie: { type: "discover", value: "movie" },
+  TV: { type: "discover", value: "tv" },
+};
+
 const MList = ({ categoryName }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const categoryMap = {
-    Popular: { type: "category", value: "popular" },
-    Horror: { type: "genre", value: 27 },
-    Action: { type: "genre", value: 28 },
-    Comedy: { type: "genre", value: 35 },
-    Movie: { type: "discover", value: "movie" },
-    TV: { type: "discover", value: "tv" },
-  };
-
   useEffect(() => {
     const constructFetchUrl = (categoryName) => {
-      const category = categoryMap[categoryName];
+      const category = CATEGORY_MAP[categoryName];
       if (!category) return "";
       if (category.type === "genre") {
         return `${process.env.REACT_APP_BASE_URL}/discover/movie?with_genres=${category.value}&api_key=${process.env.REACT_APP_API_KEY}`;

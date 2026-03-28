@@ -1,13 +1,13 @@
 // ==============================
 // 🎨 VARIABLES
 // ==============================
-:root {
-  --gold: #ffd65a;
-  --bg-dark: #0b0b0d;
-  --bg-card: #141414;
-  --text: #fff;
-  --muted: #aaa;
-}
+// :root {
+//   --gold: #ffd65a;
+//   --bg-dark: #0b0b0d;
+//   --bg-card: #141414;
+//   --text: #fff;
+//   --muted: #aaa;
+// }
 
 // ==============================
 // 🎬 MAIN CONTAINER
@@ -107,12 +107,17 @@
   .poster {
     width: 80%;
     border-radius: 10px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 214, 90, 0.4); // 🔹 Shadow đẹp hơn
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.8),
+      0 0 20px rgba(255, 214, 90, 0.4); // 🔹 Shadow đẹp hơn
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
 
     &:hover {
       transform: translateY(-8px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.9),
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.9),
         0 0 30px rgba(255, 214, 90, 0.6);
     }
 
@@ -630,7 +635,9 @@
       height: 140px;
       object-fit: cover;
       border-radius: 10px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 
       @media (max-width: 768px) {
         height: 120px;

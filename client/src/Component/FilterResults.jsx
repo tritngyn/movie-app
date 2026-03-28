@@ -21,13 +21,15 @@ export default function FilterResults() {
     sort: searchParams.get("sort") || "latest",
   };
 
+  const { country, category, genre, year, sort } = filters;
+
   // Fetch movies với filters
   useEffect(() => {
     const fetchFilteredMovies = async () => {
       setLoading(true);
       try {
         // Xác định type (movie hoặc tv)
-        const type = filters.category === "tv" ? "tv" : "movie";
+        const type = category === "tv" ? "tv" : "movie";
 
         // Build query parameters
         const params = new URLSearchParams({
@@ -37,36 +39,36 @@ export default function FilterResults() {
         });
 
         // Thêm filters vào params
-        if (filters.country !== "all") {
-          params.append("with_origin_country", filters.country);
+        if (country !== "all") {
+          params.append("with_origin_country", country);
         }
 
-        if (filters.genre !== "all") {
-          params.append("with_genres", filters.genre);
+        if (genre !== "all") {
+          params.append("with_genres", genre);
         }
 
-        if (filters.year !== "all") {
+        if (year !== "all") {
           const dateKey =
             type === "movie" ? "primary_release_year" : "first_air_date_year";
-          params.append(dateKey, filters.year);
+          params.append(dateKey, year);
         }
 
         // Sắp xếp
-        if (filters.sort === "latest") {
+        if (sort === "latest") {
           params.append("sort_by", "release_date.desc");
-        } else if (filters.sort === "oldest") {
+        } else if (sort === "oldest") {
           params.append("sort_by", "release_date.asc");
-        } else if (filters.sort === "imdb") {
+        } else if (sort === "imdb") {
           params.append("sort_by", "vote_average.desc");
           params.append("vote_count.gte", "100");
-        } else if (filters.sort === "views") {
+        } else if (sort === "views") {
           params.append("sort_by", "popularity.desc");
         }
 
         const response = await axios.get(
           `${
             process.env.REACT_APP_BASE_URL
-          }/discover/${type}?${params.toString()}`
+          }/discover/${type}?${params.toString()}`,
         );
 
         setMovies(response.data.results || []);
@@ -79,7 +81,7 @@ export default function FilterResults() {
     };
 
     fetchFilteredMovies();
-  }, [searchParams, currentPage]);
+  }, [currentPage, category, country, genre, sort, year]);
 
   // Hiển thị filter tags
   const getFilterLabel = (key, value) => {

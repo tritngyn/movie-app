@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "./MovieList.module.scss";
 import MovieCard from "./MovieCard";
-const API_BASE_URL = "http://localhost:5000/api/movies";
+import UploadMovie from "../Upload/UploadMovie";
 
 export default function MDBMovieList() {
   const [movies, setMovies] = useState([]);
@@ -14,7 +14,9 @@ export default function MDBMovieList() {
     const fetchMovies = async () => {
       try {
         // Gọi API với phân trang (lấy trang 1, 10 phim/trang)
-        const response = await axios.get(API_BASE_URL + "?page=1&limit=10");
+        const response = await axios.get(
+          "http://localhost:5000/api/movies?limit=20"
+        );
 
         // Dữ liệu phim nằm trong response.data.data (theo cấu trúc controller)
         setMovies(response.data.data);
@@ -33,32 +35,40 @@ export default function MDBMovieList() {
   if (error) return <h2 style={{ color: "red" }}>Lỗi: {error}</h2>;
 
   return (
-    <section className={styles["movie-section"]}>
-      <div className={styles["movie-section-header"]}></div>
-      {loading ? (
-        <p className={styles["loading-text"]}>Đang tải phim...</p>
-      ) : movies.length === 0 ? (
-        <p className={styles["no-movie"]}>Không có phim nào</p>
-      ) : (
-        <div className={styles["movies-grid"]}>
-          {movies.slice(0, 20).map((movie) => (
-            <div className={styles["movie-card"]} key={movie.id}>
-              <Link
-                to={`/${movie.id}`}
-                className={styles["movie-link"]}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <MovieCard
-                  image={`${movie.poster}`}
-                  title={movie.title}
-                  rating={movie.imdb_rating?.toFixed(1)}
-                  quality="HD"
-                />
-              </Link>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
+    <>
+      <section className="upload_movie">
+        <UploadMovie />
+      </section>
+      <section className={styles["movie-section"]}>
+        <div className={styles["movie-section-header"]}></div>
+        {loading ? (
+          <p className={styles["loading-text"]}>Đang tải phim...</p>
+        ) : movies.length === 0 ? (
+          <p className={styles["no-movie"]}>Không có phim nào</p>
+        ) : (
+          <div className={styles["movies-grid"]}>
+            {movies.slice(0, 20).map((movie) => (
+              <div className={styles["movie-card"]} key={movie._id}>
+                <Link
+                  to={`/user_film/${movie._id}`}
+                  className={styles["movie-link"]}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <MovieCard
+                    image={
+                      "https://image.tmdb.org/t/p/w500/bjUWGw0Ao0qVWxagN3VCwBJHVo6.jpg" ||
+                      `${movie.poster}`
+                    }
+                    title={movie.title}
+                    rating={movie.imdb_rating?.toFixed(1)}
+                    quality="HD"
+                  />
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </>
   );
 }

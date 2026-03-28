@@ -27,4 +27,7 @@ router.get("/", movieController.getAllMovies);
 // 'video' là tên key mà Frontend phải gửi đúng y hệt
 router.post("/upload", upload.single("video"), movieController.uploadMovie);
 
+// Route lấy chi tiết phim (Đặt dòng này ở cuối cùng, sau route upload)
+// :id là tham số động (VD: /api/movies/65a1b2c3d4e5...)
+router.get("/:id", movieController.getMovieById);
 module.exports = router;

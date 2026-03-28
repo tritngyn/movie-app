@@ -107,7 +107,7 @@ const Comment = ({ movieId }) => {
           <div key={comment.id} className="comment-card">
             <div className="card-top">
               <avatar className="avatar">
-                <img src={hqh} />
+                <img src={hqh} alt="Avatar nguoi dung" />
               </avatar>
               <div className="card-body">
                 <div className="card-header">
