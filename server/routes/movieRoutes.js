@@ -1,18 +1,45 @@
-// server/routes/movieRoutes.js
+// File: server/routes/movieRoutes.js
 const express = require("express");
 const router = express.Router();
 const movieController = require("../controllers/movieController");
+const { authMiddleware } = require("../middlewares/authMiddleware");
+const {
+  validate,
+  createMovieSchema,
+  updateMovieSchema,
+  paginationSchema,
+} = require("../middlewares/validate");
 
-// --- CÁC ROUTES ---
+// --- PUBLIC ROUTES (Không cần đăng nhập) ---
 
-// Route cũ (Lấy danh sách)
-router.get("/", movieController.getAllMovies);
+// Health check
+router.get("/health", movieController.healthCheck);
 
-// Route MỚI: Upload phim
-// Không còn dùng multer ở đây vì file được upload trực tiếp từ React -> Supabase
-router.post("/upload", movieController.uploadMovie);
+// Lấy danh sách phim (có phân trang + tìm kiếm)
+router.get("/", validate(paginationSchema, "query"), movieController.getAllMovies);
 
-// Route lấy chi tiết phim (Đặt dòng này ở cuối cùng, sau route upload)
-// :id là tham số động (VD: /api/movies/65a1b2c3d4e5...)
+// Lấy chi tiết 1 phim
 router.get("/:id", movieController.getMovieById);
+
+// --- PROTECTED ROUTES (Cần đăng nhập) ---
+
+// Upload/Tạo phim mới
+router.post(
+  "/upload",
+  authMiddleware,
+  validate(createMovieSchema),
+  movieController.uploadMovie
+);
+
+// Cập nhật phim
+router.put(
+  "/:id",
+  authMiddleware,
+  validate(updateMovieSchema),
+  movieController.updateMovie
+);
+
+// Xóa phim
+router.delete("/:id", authMiddleware, movieController.deleteMovie);
+
 module.exports = router;

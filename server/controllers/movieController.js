@@ -1,54 +1,79 @@
 // File: server/controllers/movieController.js
 const Movie = require("../models/Movie");
+const { AppError } = require("../middlewares/errorHandler");
 
-// Chức năng lấy tất cả phim với Phân trang
-exports.getAllMovies = async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Mặc định trang 1
-  const limit = parseInt(req.query.limit) || 10; // Mặc định 10 phim/trang
-  const skip = (page - 1) * limit;
-
+/**
+ * GET /api/movies
+ * Lấy danh sách phim với phân trang và tìm kiếm
+ */
+exports.getAllMovies = async (req, res, next) => {
   try {
-    const movies = await Movie.find().skip(skip).limit(limit);
-    // Lấy tổng số lượng phim (để tính số trang)
-    const totalMovies = await Movie.countDocuments();
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const skip = (page - 1) * limit;
+
+    // Hỗ trợ tìm kiếm theo title (text search)
+    const filter = {};
+    if (req.query.search) {
+      filter.$text = { $search: req.query.search };
+    }
+
+    const [movies, totalMovies] = await Promise.all([
+      Movie.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Movie.countDocuments(filter),
+    ]);
 
     res.status(200).json({
       success: true,
       data: movies,
-      currentPage: page,
-      totalPages: Math.ceil(totalMovies / limit),
-      totalCount: totalMovies,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalMovies / limit),
+        totalCount: totalMovies,
+        limit,
+      },
     });
   } catch (error) {
-    console.error("❌ LỖI API GET MOVIES:", error); // <--- Thêm dòng này
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error); // Chuyển lỗi cho Global Error Handler
   }
 };
 
-exports.uploadMovie = async (req, res) => {
+/**
+ * GET /api/movies/:id
+ * Lấy chi tiết 1 phim theo ID
+ */
+exports.getMovieById = async (req, res, next) => {
   try {
-    // 1. Kiểm tra xem có videoUrl được gửi từ frontend không
-    if (!req.body.videoUrl) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Vui lòng cung cấp link videoUrl từ Supabase!",
-        });
+    const movie = await Movie.findById(req.params.id);
+
+    if (!movie) {
+      throw new AppError("Không tìm thấy phim này trong hệ thống.", 404);
     }
 
-    // 2. Lấy link file trực tiếp từ req.body (do Client gửi sau khi upload lên Supabase)
-    const videoUrl = req.body.videoUrl;
+    res.status(200).json({
+      success: true,
+      data: movie,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    // 3. Tạo data phim mới
+/**
+ * POST /api/movies/upload
+ * Tạo phim mới (Cần đăng nhập)
+ */
+exports.uploadMovie = async (req, res, next) => {
+  try {
     const newMovie = new Movie({
-      title: req.body.title || "Phim chưa đặt tên",
+      title: req.body.title,
+      description: req.body.description,
       plot: req.body.plot,
-      videoUrl: videoUrl, // Lưu đường dẫn Supabase vào DB
-      // Các trường khác tùy ý...
+      videoUrl: req.body.videoUrl,
+      thumbnailUrl: req.body.thumbnailUrl,
+      genre: req.body.genre,
+      releaseYear: req.body.releaseYear,
+      createdBy: req.user?.id, // Gắn user ID từ auth middleware
     });
 
     await newMovie.save();
@@ -59,44 +84,83 @@ exports.uploadMovie = async (req, res) => {
       data: newMovie,
     });
   } catch (error) {
-    console.error("❌ LỖI API UPLOAD MOVIE:", error);
-    res.status(500).json({ success: false, message: error.message });
+    next(error);
   }
 };
-// --- HÀM MỚI: Lấy chi tiết 1 phim ---
-exports.getMovieById = async (req, res) => {
+
+/**
+ * PUT /api/movies/:id
+ * Cập nhật thông tin phim (Cần đăng nhập)
+ */
+exports.updateMovie = async (req, res, next) => {
   try {
-    // 1. Lấy ID từ đường dẫn URL
-    // Ví dụ: Khách truy cập /api/movies/65c123... -> id sẽ là "65c123..."
-    const { id } = req.params;
+    const movie = await Movie.findById(req.params.id);
 
-    // 2. Gọi Mongoose tìm trong Database theo ID
-    const movie = await Movie.findById(id);
-
-    // 3. Trường hợp 1: ID đúng định dạng nhưng không có phim nào (VD: phim bị xóa rồi)
     if (!movie) {
-      return res.status(404).json({
-        success: false,
-        message: "Không tìm thấy phim này trong hệ thống.",
-      });
+      throw new AppError("Không tìm thấy phim để cập nhật.", 404);
     }
 
-    // 4. Trường hợp 2: Tìm thấy phim -> Trả về Client
+    // Chỉ cập nhật các field được gửi lên
+    const allowedFields = [
+      "title",
+      "description",
+      "plot",
+      "videoUrl",
+      "thumbnailUrl",
+      "genre",
+      "releaseYear",
+    ];
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        movie[field] = req.body[field];
+      }
+    });
+
+    const updatedMovie = await movie.save();
+
     res.status(200).json({
       success: true,
-      data: movie,
+      message: "Cập nhật phim thành công!",
+      data: updatedMovie,
     });
   } catch (error) {
-    // 5. In lỗi ra Terminal để debug (Quan trọng!)
-    console.error("❌ LỖI GET DETAIL:", error);
+    next(error);
+  }
+};
 
-    // Xử lý riêng lỗi ID sai định dạng (VD: gửi id là "abc" thay vì chuỗi hex 24 ký tự)
-    if (error.kind === "ObjectId") {
-      return res
-        .status(400)
-        .json({ success: false, message: "ID phim không hợp lệ." });
+/**
+ * DELETE /api/movies/:id
+ * Xóa phim (Cần đăng nhập)
+ */
+exports.deleteMovie = async (req, res, next) => {
+  try {
+    const movie = await Movie.findById(req.params.id);
+
+    if (!movie) {
+      throw new AppError("Không tìm thấy phim để xóa.", 404);
     }
 
-    res.status(500).json({ success: false, message: "Lỗi Server nội bộ." });
+    await Movie.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Đã xóa phim thành công!",
+      data: { id: req.params.id },
+    });
+  } catch (error) {
+    next(error);
   }
+};
+
+/**
+ * GET /api/movies/health
+ * Health check endpoint
+ */
+exports.healthCheck = (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Movie API is running",
+    timestamp: new Date().toISOString(),
+  });
 };
