@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
+import { supabase } from "../../supabaseClient";
 import styles from "./UploadMovie.module.scss";
 
 function UploadMovie() {
@@ -43,23 +44,47 @@ function UploadMovie() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("video", file);
-    formData.append("title", title.trim());
-    formData.append("plot", plot.trim() || "Mô tả phim tự upload");
-
     try {
       setUploading(true);
-      setStatus({ type: "", message: "" });
+      setStatus({ type: "info", message: "Đang tải lên Supabase..." });
+
+      // 1. Upload video lên Supabase Storage (bucket: videos)
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("videos")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw new Error(`Lỗi upload video: ${uploadError.message}`);
+      }
+
+      // 2. Lấy Public URL của file video
+      const { data: publicUrlData } = supabase.storage
+        .from("videos")
+        .getPublicUrl(uploadData.path);
+
+      const videoUrl = publicUrlData.publicUrl;
+
+      setStatus({
+        type: "info",
+        message: "Đang lưu thông tin vào cơ sở dữ liệu...",
+      });
+
+      // 3. Gửi thông tin gồm tiêu đề, mô tả, và videoUrl tới server Node.js
+      const payload = {
+        title: title.trim(),
+        plot: plot.trim() || "Mô tả phim tự upload",
+        videoUrl: videoUrl,
+      };
 
       const res = await axios.post(
         `${API_BASE_URL}/api/movies/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        },
+        payload,
       );
 
       setStatus({

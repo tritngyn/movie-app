@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://cdiayaofvcjovgcbhupo.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkaWF5YW9mdmNqb3ZnY2JodXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzOTE2MjIsImV4cCI6MjA3NTk2NzYyMn0.ebnl4d_ZcVk_mpRas68030yhVrEVeBaFbTwrQk7J6mA";
+// Sử dụng biến môi trường từ file client/.env
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 

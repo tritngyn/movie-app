@@ -30,22 +30,24 @@ exports.getAllMovies = async (req, res) => {
 
 exports.uploadMovie = async (req, res) => {
   try {
-    // 1. Kiểm tra xem có file gửi lên không
-    if (!req.file) {
+    // 1. Kiểm tra xem có videoUrl được gửi từ frontend không
+    if (!req.body.videoUrl) {
       return res
         .status(400)
-        .json({ success: false, message: "Vui lòng chọn file video!" });
+        .json({
+          success: false,
+          message: "Vui lòng cung cấp link videoUrl từ Supabase!",
+        });
     }
 
-    // 2. Tạo đường dẫn URL (Server sẽ phục vụ file này)
-    // Ví dụ: http://localhost:5000/uploads/171500-spiderman.mp4
-    const videoUrl = `/uploads/${req.file.filename}`;
+    // 2. Lấy link file trực tiếp từ req.body (do Client gửi sau khi upload lên Supabase)
+    const videoUrl = req.body.videoUrl;
 
     // 3. Tạo data phim mới
     const newMovie = new Movie({
       title: req.body.title || "Phim chưa đặt tên",
       plot: req.body.plot,
-      videoUrl: videoUrl, // Quan trọng: Lưu đường dẫn vào DB
+      videoUrl: videoUrl, // Lưu đường dẫn Supabase vào DB
       // Các trường khác tùy ý...
     });
 
@@ -53,10 +55,11 @@ exports.uploadMovie = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Upload thành công!",
+      message: "Lưu thông tin phim thành công!",
       data: newMovie,
     });
   } catch (error) {
+    console.error("❌ LỖI API UPLOAD MOVIE:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
