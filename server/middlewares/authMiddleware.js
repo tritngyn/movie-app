@@ -7,10 +7,16 @@ const { createRemoteJWKSet, jwtVerify } = require("jose");
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
 
 // JWKS Endpoint: Supabase public keys để xác thực JWT
-// jose sẽ tự động fetch và cache public key từ endpoint này
-const JWKS = createRemoteJWKSet(
-  new URL(`${SUPABASE_URL}/.well-known/jwks.json`)
-);
+// Lazy init: chỉ tạo JWKS khi SUPABASE_URL có giá trị, tránh crash khi server start
+let _jwks = null;
+const getJWKS = () => {
+  if (!_jwks && SUPABASE_URL) {
+    _jwks = createRemoteJWKSet(
+      new URL(`${SUPABASE_URL}/.well-known/jwks.json`)
+    );
+  }
+  return _jwks;
+};
 
 /**
  * Middleware: Kiểm tra người dùng đã đăng nhập chưa
@@ -37,6 +43,8 @@ const authMiddleware = async (req, res, next) => {
         message: "Lỗi cấu hình server: thiếu SUPABASE_URL.",
       });
     }
+
+    const JWKS = getJWKS();
 
     // Giải mã và xác thực token bằng public key từ JWKS
     const { payload } = await jwtVerify(token, JWKS, {

@@ -1,129 +1,301 @@
-# 🎬 Full-Stack Movie Application
+# 🎬 MovieApp — Full-Stack Movie Streaming Platform
 
-Một ứng dụng web xem phim và chia sẻ video nội bộ, được xây dựng trên kiến trúc **MERN Stack** kết hợp với hệ sinh thái **Supabase** (BaaS) nhằm tối ưu hóa hiệu suất truyền tải video và bảo mật.
+A full-stack web application for browsing, streaming, and sharing movies — built with a **MERN stack** backend and **Supabase** cloud services for authentication, storage, and real-time data.
 
-## ✨ Tính Năng Nổi Bật (Key Features)
-
-- **🌍 Tải lên Video siêu tốc (Direct-to-Cloud):** Khách hàng tải trực tiếp video lên hệ thống phân phối nội dung của **Supabase Storage** (Bỏ qua Node.js Server). Xóa bỏ hoàn toàn giới hạn băng thông và dung lượng tệp.
-- **🔐 Xác thực an toàn (Authentication):** Đăng nhập và quản lý phiên người dùng bằng **Supabase Auth**.
-- **📋 Quản lý danh mục cá nhân:** Người dùng có danh sách phim yêu thích (Favorites) và có thể phân loại theo danh sách phát riêng (Watchlist).
-- **💬 Tương tác cộng đồng:** Tính năng bình luận (Comments) phim thời gian thực (Lưu trên Supabase PostgreSQL).
-- **📡 Quản lý nội dung phim nhanh chóng:** Thông tin metadata của phim, đạo diễn, mô tả, và đường dẫn URL video được quản lý qua API tự xây dựng với **Node.js** và **MongoDB**.
-
-## 🛠 Công Nghệ Sử Dụng (Tech Stack)
-
-### Frontend (`/client`)
-
-- **Library:** React.js, React Router
-- **Styling:** SCSS, CSS Modules
-- **Data Fetching:** Axios
-- **BaaS SDK:** `@supabase/supabase-js`
-
-### Backend (`/server`)
-
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database (NoSQL):** MongoDB & Mongoose (Lưu thông tin Phim)
-
-### Cloud Services
-
-- **Supabase Storage:** Lưu trữ Video (`.mp4`, `.mov`, v.v.)
-- **Supabase Auth:** Quản lý người dùng.
-- **Supabase PostgreSQL:** Lưu trữ Dữ liệu quan hệ (Favorites, Watchlists, Comments).
+> **Live Demo:** [movie-app-gold-five.vercel.app](https://movie-app-gold-five.vercel.app/)
 
 ---
 
-## 🏗 Cấu Trúc Thư Mục (Folder Structure)
+## ✨ Key Features
 
-```text
+### 🎥 Movie Browsing & Discovery
+- Browse trending, popular, and top-rated movies via **TMDB API**
+- Full-text search with instant results
+- Advanced filtering by genre, year, and rating
+- Detailed movie pages with trailers, cast info, and descriptions
+
+### 📤 Direct-to-Cloud Video Upload
+- Upload videos directly from the browser to **Supabase Storage** — completely bypassing the Node.js server
+- Only lightweight JSON metadata (title, video URL) is sent to the backend
+- **Zero server bandwidth consumed** for video file transfers
+
+### 🔐 Authentication & Authorization
+- Secure user authentication powered by **Supabase Auth**
+- JWT token verification on the backend via **JWKS (JSON Web Key Set)**
+- Role-based access control with `authMiddleware` and `adminOnly` guards
+
+### 💾 Personal Collections
+- **Favorites** — Save movies to a personal favorites list
+- **Watchlists** — Create multiple custom lists and organize movies into playlists
+- Toggle add/remove with duplicate-prevention logic
+
+### 💬 Community Interaction
+- Comment on any movie with real-time persistence
+- Comments stored in **Supabase PostgreSQL** with user attribution
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend (`/client`)
+
+| Technology | Purpose |
+|------------|---------|
+| **React 19** | UI library with functional components & hooks |
+| **React Router 7** | Client-side routing & navigation |
+| **SCSS / CSS Modules** | Modular, scoped styling |
+| **Axios** | HTTP client for API calls |
+| **Supabase JS SDK** | Auth, Storage, and PostgreSQL client |
+| **Swiper** | Touch-friendly movie carousels |
+| **React Toastify** | Toast notifications |
+| **MUI Icons + FontAwesome** | Icon libraries |
+| **React Lazy Load** | Image lazy loading for performance |
+
+### Backend (`/server`)
+
+| Technology | Purpose |
+|------------|---------|
+| **Node.js** | Server runtime |
+| **Express 5** | Web framework |
+| **MongoDB Atlas + Mongoose** | NoSQL database for movie metadata |
+| **Helmet** | Security headers (XSS, clickjacking protection) |
+| **express-rate-limit** | DDoS protection (100 req / 15 min per IP) |
+| **Joi** | Request body & query validation |
+| **jose** | JWT verification via Supabase JWKS |
+| **Morgan** | HTTP request logging |
+
+### Cloud Services
+
+| Service | Purpose |
+|---------|---------|
+| **Supabase Auth** | User registration & login |
+| **Supabase Storage** | Video file hosting (`.mp4`, `.mov`) |
+| **Supabase PostgreSQL** | Relational data (favorites, watchlists, comments) |
+| **MongoDB Atlas** | Movie metadata storage |
+| **TMDB API** | Movie catalog data source |
+| **Vercel** | Frontend deployment |
+| **Railway** | Backend deployment |
+
+---
+
+## 🏗 Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                        CLIENT (React)                        │
+│                     Vercel / localhost:3000                   │
+├──────────────┬──────────────────┬────────────────────────────┤
+│              │                  │                            │
+│   TMDB API   │   Express API    │      Supabase (BaaS)       │
+│   (Movies)   │   (Railway)      │                            │
+│              │   localhost:5000  │  ┌──────────────────────┐  │
+│  - Search    │                  │  │  Auth (JWT)          │  │
+│  - Trending  │  - POST movie    │  │  Storage (Videos)    │  │
+│  - Details   │  - GET movies    │  │  PostgreSQL:         │  │
+│              │  - PUT / DELETE  │  │   - favorites        │  │
+│              │                  │  │   - watchlists       │  │
+│              │   ┌──────────┐   │  │   - comments         │  │
+│              │   │ MongoDB  │   │  └──────────────────────┘  │
+│              │   │ Atlas    │   │                            │
+│              │   └──────────┘   │                            │
+└──────────────┴──────────────────┴────────────────────────────┘
+```
+
+### Upload Flow (Zero-Server-Load Architecture)
+
+```
+1. Browser ──── Video File ────→ Supabase Storage (direct upload)
+2. Supabase ─── Public URL ───→ Browser
+3. Browser ──── { title, videoUrl } (JSON) ──→ Express API
+4. Express ──── Save metadata ──→ MongoDB
+```
+
+> The video file never touches the Node.js server — **100% bandwidth offloaded** to Supabase CDN.
+
+---
+
+## 📁 Project Structure
+
+```
 movieapp/
-├── client/           # Ứng dụng Frontend (React)
+├── client/                          # Frontend (React)
 │   ├── public/
-│   ├── src/
-│   │   ├── Component/   # Các Component UI (MovieCard, UploadMovie,...)
-│   │   ├── supabaseClient.js # Cấu hình SDK giao tiếp với Supabase
-│   │   └── App.js
-├── server/           # Ứng dụng Backend (Node.js/Express)
-│   ├── controllers/  # Xử lý Logic (Thêm Phim, Trả danh sách Phim)
-│   ├── models/       # Schema MongoDB cho Phim
-│   ├── routes/       # Khai báo các API Endpoints
-│   └── index.js      # Điểm bắt đầu của Server Node.js
+│   └── src/
+│       ├── Component/
+│       │   ├── MovieList/           # Movie cards, details, genre lists
+│       │   ├── Upload/              # Video upload form
+│       │   ├── User/                # Auth, Favorites, Watchlists
+│       │   ├── Comment.js           # Movie comments
+│       │   ├── FilterBar.jsx        # Genre/year/rating filters
+│       │   ├── HeroSection.js       # Landing page hero
+│       │   ├── SearchBar.js         # Search input
+│       │   └── Footer.js
+│       ├── NAV/                     # Navigation bar
+│       ├── supabaseClient.js        # Supabase SDK + helper functions
+│       └── App.js                   # Root component & routing
+│
+├── server/                          # Backend (Node.js / Express)
+│   ├── controllers/
+│   │   └── movieController.js       # CRUD logic (GET, POST, PUT, DELETE)
+│   ├── middlewares/
+│   │   ├── authMiddleware.js        # Supabase JWT verification (JWKS)
+│   │   ├── errorHandler.js          # Global error handler + AppError class
+│   │   └── validate.js              # Joi validation schemas
+│   ├── models/
+│   │   └── Movie.js                 # Mongoose schema with text index
+│   ├── routes/
+│   │   └── movieRoutes.js           # API route definitions
+│   ├── index.js                     # Server entry point
+│   └── package.json
+│
 └── README.md
 ```
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt (Getting Started)
+## 🚀 Getting Started
 
-### 1. Yêu Cầu Cấu Hình (Prerequisites)
+### Prerequisites
 
-- [Node.js](https://nodejs.org/) (Version 16+ khuyến nghị)
-- Có tài khoản [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-- Có dự án trên [Supabase](https://supabase.com/)
+- [Node.js](https://nodejs.org/) v18+
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account (free tier works)
+- [Supabase](https://supabase.com/) project (free tier works)
+- [TMDB API Key](https://www.themoviedb.org/settings/api) (free)
 
-### 2. Cài Đặt Môi Trường (Environment Setup)
+### 1. Clone the repository
 
-Bạn cần tạo 2 file `.env`, một cho Client và một cho Server.
-
-**Trong thư mục `client/` tạo file `.env`:**
-
-```env
-REACT_APP_API_SERVER=http://localhost:5000
-REACT_APP_SUPABASE_URL=your_supabase_project_url
-REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_public_key
+```bash
+git clone https://github.com/your-username/movieapp.git
+cd movieapp
 ```
 
-**Trong thư mục `server/` tạo file `.env`:**
+### 2. Set up environment variables
+
+**`client/.env`**
+
+```env
+REACT_APP_API_KEY=your_tmdb_api_key
+REACT_APP_BASE_URL=https://api.themoviedb.org/3
+REACT_APP_API_SERVER=http://localhost:5000
+REACT_APP_SUPABASE_URL=https://your-project.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+**`server/.env`**
 
 ```env
 PORT=5000
-MONGO_URI=your_mongodb_connection_string
+NODE_ENV=development
+MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/movie-app
+SUPABASE_URL=https://your-project.supabase.co
+CLIENT_URL=http://localhost:3000
 ```
 
-### 3. Cài Đặt Mạng Cơ Sở Dữ Liệu Supabase
+### 3. Set up Supabase tables
 
-Chạy đoạn Script SQL sau ở màn hình `SQL Editor` trong dự án Supabase để tạo các Bảng dữ liệu người dùng (Favorites, Watchlist, Comments) và Bucket lưu Video:
+Run the following SQL in Supabase SQL Editor to create the required tables:
 
-_Tham khảo toàn bộ SQL script đã được generate từ SupabaseClient.js trong quá trình định nghĩa dự án._
-_(Tham khảo lại cuộc trò chuyện cài đặt RLS Policy và Tables của Dự Án)._
+```sql
+-- Favorites
+CREATE TABLE favorites (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users NOT NULL,
+  movie_id INTEGER NOT NULL,
+  movie_title TEXT,
+  poster TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(user_id, movie_id)
+);
 
-### 4. Chạy Ứng Dụng (Run the App)
+-- Watchlists
+CREATE TABLE watchlists (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users NOT NULL,
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
 
-Bạn cần mở 2 Terminal để chạy cả Client và Server cùng lúc:
+-- Watchlist Movies
+CREATE TABLE watchlist_movies (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  watchlist_id UUID REFERENCES watchlists(id) ON DELETE CASCADE NOT NULL,
+  movie_id INTEGER NOT NULL,
+  title TEXT,
+  poster_path TEXT,
+  added_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(watchlist_id, movie_id)
+);
 
-**🏠 Chạy Server (Backend):**
+-- Comments
+CREATE TABLE comments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users NOT NULL,
+  username TEXT,
+  movie_id INTEGER NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Enable Row Level Security
+ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE watchlists ENABLE ROW LEVEL SECURITY;
+ALTER TABLE watchlist_movies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+```
+
+### 4. Install & Run
+
+**Backend:**
 
 ```bash
 cd server
 npm install
-npm start
+npm start        # Production
+npm run dev      # Development (auto-reload)
 ```
 
-_(Nếu thành công Terminal sẽ báo: `MongoDB Connected`)_
-
-**💻 Chạy Client (Frontend):**
+**Frontend:**
 
 ```bash
 cd client
 npm install
-npm start
+npm start        # Opens http://localhost:3000
 ```
 
-_(Mở trình duyệt ở địa chỉ `http://localhost:3000`)_
+---
+
+## 🌐 Deployment
+
+| Component | Platform | URL |
+|-----------|----------|-----|
+| Frontend | **Vercel** | [movie-app-gold-five.vercel.app](https://movie-app-gold-five.vercel.app/) |
+| Backend | **Railway** | Auto-deployed from GitHub |
+| Database | **MongoDB Atlas** | Cloud-hosted (free tier) |
+| BaaS | **Supabase** | Auth + Storage + PostgreSQL |
 
 ---
 
-## 💡 Luồng Hoạt Động Cốt Lõi (Architecture Highlight)
+## 🔒 API Endpoints
 
-**Tính năng Upload Phim Tiên Tiến:**
-Thay vì dùng Middleware `multer` gửi video thẳng cho Node.js như truyền thống, ứng dụng thực hiện chuỗi hành động tối ưu sau:
+### Public Routes
 
-1. Trình duyệt (React) đẩy file Video thẳng lên **Supabase Storage**.
-2. Supabase trả về một **Public URL**.
-3. Khách hàng gửi 1 JSON cực nhẹ (bao gồm Tiêu đề phim + `videoUrl`) về `POST /api/movies/upload` phía Node.js.
-4. Node.js lưu thông tin này vào **MongoDB**.
-   => Giảm tải 100% băng thông tải video và tiền lưu trữ ổ cứng cho máy chủ Node.js!
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Server health check |
+| `GET` | `/api/movies` | Get all movies (paginated) |
+| `GET` | `/api/movies/:id` | Get movie by ID |
+| `GET` | `/api/movies?search=keyword` | Full-text search |
+
+### Protected Routes (requires JWT)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/movies/upload` | Create a new movie |
+| `PUT` | `/api/movies/:id` | Update movie info |
+| `DELETE` | `/api/movies/:id` | Delete a movie |
 
 ---
 
-_Dự án được xây dựng và tối ưu kiến trúc Micro-services._ 🚀
+## 📄 License
+
+This project is for educational and portfolio purposes.

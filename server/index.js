@@ -3,7 +3,7 @@
 //  Movie App Backend - Production-Ready Server
 // ═══════════════════════════════════════════════════════════════
 
-const path = require("path");
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -55,9 +55,6 @@ app.use(
 // Dùng 'dev' cho development (có màu), 'combined' cho production
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
-// Static Files: Serve thư mục uploads
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 // ─── Kết nối Database ───────────────────────────────────────────
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -102,10 +99,13 @@ app.listen(PORT, () => {
 });
 
 // Graceful shutdown - Tắt server sạch sẽ
-process.on("SIGTERM", () => {
-  console.log("🔄 SIGTERM received. Shutting down gracefully...");
+const gracefulShutdown = (signal) => {
+  console.log(`🔄 ${signal} received. Shutting down gracefully...`);
   mongoose.connection.close(false).then(() => {
     console.log("📦 MongoDB connection closed.");
     process.exit(0);
   });
-});
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
